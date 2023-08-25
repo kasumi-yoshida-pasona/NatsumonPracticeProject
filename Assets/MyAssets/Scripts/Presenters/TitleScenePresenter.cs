@@ -8,10 +8,15 @@ using UniRx;
 namespace TitleScene.Presenters
 {
     /// <summary>
-    /// どのボタンが押下されたかの情報の受け渡し
+    /// ボタン押下時に処理中状態であることをViewに反映するPresenter
     /// </summary>
     public class TitleScenePresenter : MonoBehaviour
     {
+        // Model
+        [SerializeField] private TitleButtonModel _button;
+
+        // View
+        [SerializeField] private TitleLoadingView _loading;
 
         void Start()
         {

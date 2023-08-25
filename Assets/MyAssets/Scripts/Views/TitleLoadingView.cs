@@ -5,10 +5,10 @@ using UniRx;
 
 namespace TitleScene.Views
 {
-    public class TitleSceneView : MonoBehaviour
+    public class TitleLoadingView : MonoBehaviour
     {
         /// <summary>
-        /// 押下されたら次の処理まで待機（ぐるぐる OR disabled）表示にする
+        /// 処理中であれば待機（ぐるぐる OR disabled）表示にする
         /// </summary>
     }
 }
