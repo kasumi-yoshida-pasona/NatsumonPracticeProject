@@ -12,4 +12,3 @@ namespace TitleScene.Views
         /// </summary>
     }
 }
-
