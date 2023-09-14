@@ -6,25 +6,36 @@ using UniRx;
 
 namespace TitleScene.Models
 {
-    public class TitleButtonModel : MonoBehaviour
+    public class TitleButtonModel
     {
-        [SerializeField] private Button startBtn;
-        [SerializeField] private Button finishBtn;
 
         /// <summary>
-        /// それぞれのボタンが処理中かどうかのフラグを保持
+        /// ボタンの状態
+        /// status: select / unselect / processing
         /// </summary>
-        private bool isStartBtnProcessing = false;
-        private bool isFinishBtnProcessing = false;
+        private string startBtnStatus = "unselect";
+        private string finishBtnStatus = "unselect";
 
         /// <summary>
         /// ボタンの処理
         /// ボタン押下時に処理中へステータスを変更する
         /// 変更したらPresenterを通してViewへ処理中の情報を渡す
         /// </summary>
-        private void ChangeBtnStatusToProcessing(string btn)
+        public void ChangeBtnStatusToProcessing(string Btn)
         {
+            Debug.Log(Btn);
+        }
 
+
+        /// <summary>
+        /// ボタンの処理
+        /// ボタン押下時に処理中へステータスを変更する
+        /// 変更したらPresenterを通してViewへ処理中の情報を渡す
+        /// </summary>
+        public void ChangeBtnStatusToSelect(string Btn)
+        {
+            Debug.Log("ChangeBtnStatusToProcessing is called");
+            // Debug.Log(Btn);
         }
     }
 }

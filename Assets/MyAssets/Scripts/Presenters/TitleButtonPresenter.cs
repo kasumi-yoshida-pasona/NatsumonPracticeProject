@@ -3,6 +3,7 @@ using TitleScene.Views;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UniRx;
 
 namespace TitleScene.Presenters
@@ -12,15 +13,18 @@ namespace TitleScene.Presenters
     /// </summary>
     public class TitleScenePresenter : MonoBehaviour
     {
-        // Model
-        [SerializeField] private TitleButtonModel _button;
+        [SerializeField] private Button startBtn;
+        [SerializeField] private Button finishBtn;
 
         // View
-        [SerializeField] private TitleLoadingView _loading;
+        [SerializeField] private TitleButtonView _view;
+        // Model
+        [SerializeField] private TitleButtonModel _model;
 
-        void Start()
+        void Awake()
         {
-
+            _model = new TitleButtonModel();
+            _model.ChangeBtnStatusToProcessing("btn");
         }
     }
 
