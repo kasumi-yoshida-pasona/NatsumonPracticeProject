@@ -11,10 +11,10 @@ namespace TitleScene.Models
 
         /// <summary>
         /// ボタンの状態
-        /// status: select / unselect / processing
+        /// status: select / unselect = null / processing
         /// </summary>
-        private string startBtnStatus = "unselect";
-        private string finishBtnStatus = "unselect";
+        private string startBtnStatus = "select";
+        private string finishBtnStatus;
 
         /// <summary>
         /// ボタンの処理
@@ -35,7 +35,18 @@ namespace TitleScene.Models
         public void ChangeBtnStatusToSelect(string Btn)
         {
             Debug.Log("ChangeBtnStatusToProcessing is called");
-            // Debug.Log(Btn);
+            Debug.Log(Btn);
+            if (Btn == "START_BTN")
+            {
+                startBtnStatus = "select";
+                finishBtnStatus = null;
+            }
+            else
+            {
+                startBtnStatus = null;
+                finishBtnStatus = "select";
+            }
+            // Debug.Log(Btn.colors.normalColor);
         }
     }
 }

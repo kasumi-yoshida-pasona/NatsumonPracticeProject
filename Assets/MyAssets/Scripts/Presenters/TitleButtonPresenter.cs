@@ -13,18 +13,49 @@ namespace TitleScene.Presenters
     /// </summary>
     public class TitleScenePresenter : MonoBehaviour
     {
-        [SerializeField] private Button startBtn;
-        [SerializeField] private Button finishBtn;
+        // Button
+        [SerializeField] private TitleButtonView startBtn;
+        [SerializeField] private TitleButtonView finishBtn;
 
-        // View
-        [SerializeField] private TitleButtonView _view;
         // Model
         [SerializeField] private TitleButtonModel _model;
+
+        private string START_BTN = "START_BTN";
 
         void Awake()
         {
             _model = new TitleButtonModel();
-            _model.ChangeBtnStatusToProcessing("btn");
+            // _model.ChangeBtnStatusToSelect(startBtn);
+
+            // // ボタンが選択されたときの処理
+            // _view.OnSelectAsObservable()
+            //     .Subscribe(_ =>
+            //     {
+            //         Debug.Log(" 選択された");
+            //         // Debug.Log(gameObject.name + " が選択された");
+            //     }).AddTo(this);
+        }
+
+        void Start()
+        {
+
+            // ボタンが選択されたときの処理
+            // _view.OnSelectAsObservable()
+            //     .Subscribe(_ =>
+            //     {
+            //         Debug.Log(" 選択された");
+            //         // Debug.Log(gameObject.name + " が選択された");
+            //     }).AddTo(this);
+
+
+            // ボタンが選択されたときの処理
+            startBtn.OnSelectAsObservable()
+            .Subscribe(_ => _model.ChangeBtnStatusToSelect(START_BTN))
+            .AddTo(this);
+
+            finishBtn.OnSelectAsObservable()
+            .Subscribe(_ => Debug.Log("finishBtn Selected!"))
+            .AddTo(this);
         }
     }
 
