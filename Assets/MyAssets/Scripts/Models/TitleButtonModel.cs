@@ -13,8 +13,10 @@ namespace TitleScene.Models
         /// ボタンの状態
         /// status: select / unselect = null / processing
         /// </summary>
-        private string startBtnStatus = "select";
-        private string finishBtnStatus;
+        // private string startBtnStatus = "select";
+        // private string finishBtnStatus;
+        private Button SelectedBtn;
+        // private reactive
 
         /// <summary>
         /// ボタンの処理
@@ -32,21 +34,24 @@ namespace TitleScene.Models
         /// ボタン押下時に処理中へステータスを変更する
         /// 変更したらPresenterを通してViewへ処理中の情報を渡す
         /// </summary>
-        public void ChangeBtnStatusToSelect(string Btn)
+        public void ChangeBtnStatusToSelect(Button Btn)
         {
             Debug.Log("ChangeBtnStatusToProcessing is called");
             Debug.Log(Btn);
-            if (Btn == "START_BTN")
-            {
-                startBtnStatus = "select";
-                finishBtnStatus = null;
-            }
-            else
-            {
-                startBtnStatus = null;
-                finishBtnStatus = "select";
-            }
-            // Debug.Log(Btn.colors.normalColor);
+            // if (Btn == "START_BTN")
+            // {
+            //     startBtnStatus = "select";
+            //     finishBtnStatus = null;
+            // }
+            // else
+            // {
+            //     startBtnStatus = null;
+            //     finishBtnStatus = "select";
+            // }
+
+            SelectedBtn = Btn;
+
+            // Presenterを通してViewに
         }
     }
 }
