@@ -19,11 +19,9 @@ namespace TitleScene.Views
         /// 処理中であれば待機（ぐるぐる OR disabled）表示にする
         /// </summary>
 
-        private Subject<Unit> onSelectSubject = new Subject<Unit>();
-        public IObservable<Unit> OnSelectAsObservable() => onSelectSubject;
+        private Subject<Button> onSelectSubject = new Subject<Button>();
+        public IObservable<Button> OnSelectAsObservable() => onSelectSubject;
 
-        // private Subject<Unit> OnClickSubject = new Subject<Unit>();
-        // public IObservable<Unit> OnClickAsObservable() => onClickSubject;
 
         void Awake()
         {
@@ -34,14 +32,14 @@ namespace TitleScene.Views
             // }).AddTo(this);
 
             // targetBtn.OnSelectAsObservable()
-            //     .Subscribe(_ => onSelectSubject.OnNext(Unit.Default))
+            //     .Subscribe(_ => onSelectSubject.OnNext(Button.Default))
             //     .AddTo(this);
         }
 
         // ISelectHandlerのインターフェイスを実装
         public void OnSelect(BaseEventData eventData)
         {
-            onSelectSubject.OnNext(Unit.Default);
+            onSelectSubject.OnNext(targetBtn);
         }
 
     }

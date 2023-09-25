@@ -13,10 +13,7 @@ namespace TitleScene.Models
         /// ボタンの状態
         /// status: select / unselect = null / processing
         /// </summary>
-        // private string startBtnStatus = "select";
-        // private string finishBtnStatus;
-        private Button SelectedBtn;
-        // private reactive
+        public ReactiveProperty<Button> SelectedBtn = new ReactiveProperty<Button>();
 
         /// <summary>
         /// ボタンの処理
@@ -36,20 +33,7 @@ namespace TitleScene.Models
         /// </summary>
         public void ChangeBtnStatusToSelect(Button Btn)
         {
-            Debug.Log("ChangeBtnStatusToProcessing is called");
-            Debug.Log(Btn);
-            // if (Btn == "START_BTN")
-            // {
-            //     startBtnStatus = "select";
-            //     finishBtnStatus = null;
-            // }
-            // else
-            // {
-            //     startBtnStatus = null;
-            //     finishBtnStatus = "select";
-            // }
-
-            SelectedBtn = Btn;
+            SelectedBtn.Value = Btn;
 
             // Presenterを通してViewに
         }

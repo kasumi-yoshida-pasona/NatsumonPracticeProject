@@ -14,48 +14,45 @@ namespace TitleScene.Presenters
     public class TitleScenePresenter : MonoBehaviour
     {
         // Button
-        [SerializeField] private TitleButtonView startBtn;
-        [SerializeField] private TitleButtonView finishBtn;
+        [SerializeField] private TitleButtonView startBtnView;
+        [SerializeField] private TitleButtonView finishBtnView;
+        [SerializeField] private Button startBtn;
+        [SerializeField] private Button finishBtn;
 
         // Model
         [SerializeField] private TitleButtonModel _model;
 
-        private string START_BTN = "START_BTN";
-
         void Awake()
         {
             _model = new TitleButtonModel();
-            // _model.ChangeBtnStatusToSelect(startBtn);
-
-            // // ボタンが選択されたときの処理
-            // _view.OnSelectAsObservable()
-            //     .Subscribe(_ =>
-            //     {
-            //         Debug.Log(" 選択された");
-            //         // Debug.Log(gameObject.name + " が選択された");
-            //     }).AddTo(this);
         }
 
         void Start()
         {
-
             // ボタンが選択されたときの処理
-            // _view.OnSelectAsObservable()
-            //     .Subscribe(_ =>
-            //     {
-            //         Debug.Log(" 選択された");
-            //         // Debug.Log(gameObject.name + " が選択された");
-            //     }).AddTo(this);
-
-
-            // ボタンが選択されたときの処理
-            startBtn.OnSelectAsObservable()
-            .Subscribe(_ => _model.ChangeBtnStatusToSelect(START_BTN))
+            startBtnView.OnSelectAsObservable()
+            .Subscribe(targetBtn => {
+                _model.ChangeBtnStatusToSelect(targetBtn);
+            })
             .AddTo(this);
 
-            finishBtn.OnSelectAsObservable()
-            .Subscribe(_ => Debug.Log("finishBtn Selected!"))
+            finishBtnView.OnSelectAsObservable()
+            .Subscribe(targetBtn => {
+                _model.ChangeBtnStatusToSelect(targetBtn);
+            })
             .AddTo(this);
+
+            _model.SelectedBtn.Subscribe(targetBtn => {
+                switch (targetBtn)
+                {
+                    case startBtn:
+                        Debug.Log("StartBtn is called");
+                        break;
+                    default:
+                        Debug.Log("other is called");
+                        break;
+                }
+            }).AddTo(this);
         }
     }
 
