@@ -10,8 +10,7 @@ namespace TitleScene.Models
     {
 
         /// <summary>
-        /// ボタンの状態
-        /// status: select / unselect = null / processing
+        /// 選択されたボタン
         /// </summary>
         public ReactiveProperty<Button> SelectedBtn = new ReactiveProperty<Button>();
 
@@ -25,17 +24,12 @@ namespace TitleScene.Models
             Debug.Log(Btn);
         }
 
-
         /// <summary>
-        /// ボタンの処理
-        /// ボタン押下時に処理中へステータスを変更する
-        /// 変更したらPresenterを通してViewへ処理中の情報を渡す
+        /// ボタン選択時の処理
         /// </summary>
         public void ChangeBtnStatusToSelect(Button Btn)
         {
             SelectedBtn.Value = Btn;
-
-            // Presenterを通してViewに
         }
     }
 }

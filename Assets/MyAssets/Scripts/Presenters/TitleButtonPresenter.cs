@@ -9,22 +9,20 @@ using UniRx;
 namespace TitleScene.Presenters
 {
     /// <summary>
-    /// ボタン押下時に処理中状態であることをViewに反映するPresenter
+    /// タイトル画面のボタンの処理
     /// </summary>
     public class TitleScenePresenter : MonoBehaviour
     {
         // Button
         [SerializeField] private TitleButtonView startBtnView;
         [SerializeField] private TitleButtonView finishBtnView;
-        [SerializeField] private Button startBtn;
-        [SerializeField] private Button finishBtn;
 
         // Model
-        [SerializeField] private TitleButtonModel _model;
+        [SerializeField] private TitleButtonModel model;
 
         void Awake()
         {
-            _model = new TitleButtonModel();
+            model = new TitleButtonModel();
         }
 
         void Start()
@@ -32,25 +30,25 @@ namespace TitleScene.Presenters
             // ボタンが選択されたときの処理
             startBtnView.OnSelectAsObservable()
             .Subscribe(targetBtn => {
-                _model.ChangeBtnStatusToSelect(targetBtn);
+                model.ChangeBtnStatusToSelect(targetBtn);
             })
             .AddTo(this);
 
             finishBtnView.OnSelectAsObservable()
             .Subscribe(targetBtn => {
-                _model.ChangeBtnStatusToSelect(targetBtn);
+                model.ChangeBtnStatusToSelect(targetBtn);
             })
             .AddTo(this);
 
-            _model.SelectedBtn.Subscribe(targetBtn => {
-                switch (targetBtn)
+            // Modelで選択されたボタン情報が変更されたらそのボタン選択状態にする
+            model.SelectedBtn.Subscribe(selectedBtn => {
+                if (startBtnView.TargetBtn == selectedBtn)
                 {
-                    case startBtn:
-                        Debug.Log("StartBtn is called");
-                        break;
-                    default:
-                        Debug.Log("other is called");
-                        break;
+                    startBtnView.ChangeSelectedBtn();
+                }
+                else if (finishBtnView.TargetBtn == selectedBtn)
+                {
+                    finishBtnView.ChangeSelectedBtn();
                 }
             }).AddTo(this);
         }

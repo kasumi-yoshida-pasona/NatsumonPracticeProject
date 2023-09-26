@@ -10,10 +10,11 @@ using UniRx.Triggers;
 namespace TitleScene.Views
 {
     [RequireComponent(typeof(Button))]
-    public class TitleButtonView : MonoBehaviour, ISelectHandler
+    public class TitleButtonView : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     {
 
         [SerializeField] Button targetBtn;
+        public Button TargetBtn => targetBtn;
 
         /// <summary>
         /// 処理中であれば待機（ぐるぐる OR disabled）表示にする
@@ -39,8 +40,26 @@ namespace TitleScene.Views
         // ISelectHandlerのインターフェイスを実装
         public void OnSelect(BaseEventData eventData)
         {
-            onSelectSubject.OnNext(targetBtn);
+            if (EventSystem.current.currentSelectedGameObject != targetBtn.gameObject)
+            {
+                onSelectSubject.OnNext(targetBtn);
+            }
         }
+
+        // IPointerEnterHandlerのインターフェイスを実装
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (EventSystem.current.currentSelectedGameObject != targetBtn.gameObject)
+            {
+                onSelectSubject.OnNext(targetBtn);
+            }
+        }
+
+        public void ChangeSelectedBtn()
+        {
+            EventSystem.current.SetSelectedGameObject(targetBtn.gameObject);
+        }
+
 
     }
 }

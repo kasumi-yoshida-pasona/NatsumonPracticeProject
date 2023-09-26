@@ -1027,8 +1027,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startBtnView: {fileID: 1101420195}
   finishBtnView: {fileID: 1430756066}
-  startBtn: {fileID: 1101420192}
-  finishBtn: {fileID: 1430756063}
 --- !u!1 &1743515540
 GameObject:
   m_ObjectHideFlags: 0
