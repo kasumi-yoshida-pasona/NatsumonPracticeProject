@@ -15,40 +15,22 @@ namespace TitleScene.Presenters
         [SerializeField] private TitleButtonView finishBtnView;
 
         // Model
-        [SerializeField] private TitleButtonModel model;
+        [SerializeField] private TitleSceneModel model;
 
         void Awake()
         {
-            model = new TitleButtonModel();
+            model = new TitleSceneModel();
         }
 
         void Start()
         {
             // ボタンが選択されたときの処理
-            startBtnView.OnSelectAsObservable()
-                .Subscribe(targetBtn => {
-                    model.ChangeBtnStatusToSelect(targetBtn);
-                })
-                .AddTo(this);
-
-            finishBtnView.OnSelectAsObservable()
-                .Subscribe(targetBtn => {
-                    model.ChangeBtnStatusToSelect(targetBtn);
-                })
-                .AddTo(this);
+            StoreSelectedBtnToModel(startBtnView);
+            StoreSelectedBtnToModel(finishBtnView);
 
             // ボタンが押下されたときの処理
-            startBtnView.TargetBtn.OnClickAsObservable()
-                .Subscribe(_ => {
-                    model.ChangeBtnStatusToPushed(startBtnView.TargetBtn);
-                })
-                .AddTo(this);
-
-            finishBtnView.TargetBtn.OnClickAsObservable()
-                .Subscribe(_ => {
-                    model.ChangeBtnStatusToPushed(finishBtnView.TargetBtn);
-                })
-                .AddTo(this);
+            StorePushedBtnToModel(startBtnView.TargetBtn);
+            StorePushedBtnToModel(finishBtnView.TargetBtn);
 
             // Modelで選択されたボタン情報が変更されたらそのボタン選択状態にする
             model.SelectedBtn
@@ -74,6 +56,26 @@ namespace TitleScene.Presenters
                         // ゲーム終了確認ダイアログ表示
                     }
                 }).AddTo(this);
+        }
+
+        // Modelに選択されたボタン格納
+        private void StoreSelectedBtnToModel(TitleButtonView Btn)
+        {
+            Btn.OnSelectAsObservable()
+                .Subscribe(targetBtn => {
+                    model.StoreSelectedBtn(targetBtn);
+                })
+                .AddTo(this);
+        }
+
+        // Modelに押下されたボタン格納
+        private void StorePushedBtnToModel(Button Btn)
+        {
+            Btn.OnClickAsObservable()
+                .Subscribe(_ => {
+                    model.StorePushedBtn(Btn);
+                })
+                .AddTo(this);
         }
     }
 

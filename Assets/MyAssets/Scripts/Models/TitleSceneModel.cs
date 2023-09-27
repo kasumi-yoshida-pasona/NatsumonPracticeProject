@@ -6,7 +6,7 @@ using UniRx;
 
 namespace TitleScene.Models
 {
-    public class TitleButtonModel
+    public class TitleSceneModel
     {
         // 選択されたボタン
         public ReactiveProperty<Button> SelectedBtn = new ReactiveProperty<Button>();
@@ -15,13 +15,13 @@ namespace TitleScene.Models
         public ReactiveProperty<Button> PushedBtn = new ReactiveProperty<Button>();
 
         // 押下したボタン情報を格納
-        public void ChangeBtnStatusToPushed(Button Btn)
+        public void StorePushedBtn(Button Btn)
         {
             PushedBtn.Value = Btn;
         }
 
         // 選択したボタン情報を格納
-        public void ChangeBtnStatusToSelect(Button Btn)
+        public void StoreSelectedBtn(Button Btn)
         {
             SelectedBtn.Value = Btn;
         }

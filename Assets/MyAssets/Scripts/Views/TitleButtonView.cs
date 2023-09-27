@@ -12,10 +12,8 @@ namespace TitleScene.Views
     [RequireComponent(typeof(Button))]
     public class TitleButtonView : MonoBehaviour, ISelectHandler, IPointerEnterHandler
     {
-
         [SerializeField] Button targetBtn;
         public Button TargetBtn => targetBtn;
-
         private Subject<Button> onSelectSubject = new Subject<Button>();
         public IObservable<Button> OnSelectAsObservable() => onSelectSubject;
 
