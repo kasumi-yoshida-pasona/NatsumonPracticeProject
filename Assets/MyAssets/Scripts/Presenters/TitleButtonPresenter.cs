@@ -8,9 +8,6 @@ using UniRx;
 
 namespace TitleScene.Presenters
 {
-    /// <summary>
-    /// タイトル画面のボタンの処理
-    /// </summary>
     public class TitleScenePresenter : MonoBehaviour
     {
         // Button
@@ -29,28 +26,54 @@ namespace TitleScene.Presenters
         {
             // ボタンが選択されたときの処理
             startBtnView.OnSelectAsObservable()
-            .Subscribe(targetBtn => {
-                model.ChangeBtnStatusToSelect(targetBtn);
-            })
-            .AddTo(this);
+                .Subscribe(targetBtn => {
+                    model.ChangeBtnStatusToSelect(targetBtn);
+                })
+                .AddTo(this);
 
             finishBtnView.OnSelectAsObservable()
-            .Subscribe(targetBtn => {
-                model.ChangeBtnStatusToSelect(targetBtn);
-            })
-            .AddTo(this);
+                .Subscribe(targetBtn => {
+                    model.ChangeBtnStatusToSelect(targetBtn);
+                })
+                .AddTo(this);
+
+            // ボタンが押下されたときの処理
+            startBtnView.TargetBtn.OnClickAsObservable()
+                .Subscribe(_ => {
+                    model.ChangeBtnStatusToPushed(startBtnView.TargetBtn);
+                })
+                .AddTo(this);
+
+            finishBtnView.TargetBtn.OnClickAsObservable()
+                .Subscribe(_ => {
+                    model.ChangeBtnStatusToPushed(finishBtnView.TargetBtn);
+                })
+                .AddTo(this);
 
             // Modelで選択されたボタン情報が変更されたらそのボタン選択状態にする
-            model.SelectedBtn.Subscribe(selectedBtn => {
-                if (startBtnView.TargetBtn == selectedBtn)
-                {
-                    startBtnView.ChangeSelectedBtn();
-                }
-                else if (finishBtnView.TargetBtn == selectedBtn)
-                {
-                    finishBtnView.ChangeSelectedBtn();
-                }
-            }).AddTo(this);
+            model.SelectedBtn
+                .Subscribe(selectedBtn => {
+                    if (startBtnView.TargetBtn == selectedBtn)
+                    {
+                        startBtnView.ChangeSelectedBtn();
+                    }
+                    else if (finishBtnView.TargetBtn == selectedBtn)
+                    {
+                        finishBtnView.ChangeSelectedBtn();
+                    }
+                }).AddTo(this);
+
+            // Modelで押下されたボタン情報が変更されたらすべてのボタンをdisabledにする
+            model.PushedBtn
+                .Subscribe(PushedBtn => {
+                    if (startBtnView.TargetBtn == PushedBtn)
+                    {
+                        // ローディングシーンへ移動
+                    } else if (finishBtnView.TargetBtn == PushedBtn)
+                    {
+                        // ゲーム終了確認ダイアログ表示
+                    }
+                }).AddTo(this);
         }
     }
 

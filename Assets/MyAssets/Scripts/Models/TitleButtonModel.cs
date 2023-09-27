@@ -8,25 +8,19 @@ namespace TitleScene.Models
 {
     public class TitleButtonModel
     {
-
-        /// <summary>
-        /// 選択されたボタン
-        /// </summary>
+        // 選択されたボタン
         public ReactiveProperty<Button> SelectedBtn = new ReactiveProperty<Button>();
 
-        /// <summary>
-        /// ボタンの処理
-        /// ボタン押下時に処理中へステータスを変更する
-        /// 変更したらPresenterを通してViewへ処理中の情報を渡す
-        /// </summary>
-        public void ChangeBtnStatusToProcessing(string Btn)
+        // 押下されたボタン
+        public ReactiveProperty<Button> PushedBtn = new ReactiveProperty<Button>();
+
+        // 押下したボタン情報を格納
+        public void ChangeBtnStatusToPushed(Button Btn)
         {
-            Debug.Log(Btn);
+            PushedBtn.Value = Btn;
         }
 
-        /// <summary>
-        /// ボタン選択時の処理
-        /// </summary>
+        // 選択したボタン情報を格納
         public void ChangeBtnStatusToSelect(Button Btn)
         {
             SelectedBtn.Value = Btn;
