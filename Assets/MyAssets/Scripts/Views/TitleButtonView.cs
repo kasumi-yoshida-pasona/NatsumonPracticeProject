@@ -20,23 +20,11 @@ namespace TitleScene.Views
         // ISelectHandlerのインターフェイスを実装
         public void OnSelect(BaseEventData eventData)
         {
-            if (EventSystem.current.currentSelectedGameObject != targetBtn.gameObject)
-            {
-                onSelectSubject.OnNext(targetBtn);
-            }
+            onSelectSubject.OnNext(targetBtn);
         }
 
         // IPointerEnterHandlerのインターフェイスを実装
         public void OnPointerEnter(PointerEventData eventData)
-        {
-            if (EventSystem.current.currentSelectedGameObject != targetBtn.gameObject)
-            {
-                onSelectSubject.OnNext(targetBtn);
-            }
-        }
-
-        // ボタンを選択状態に設定
-        public void ChangeSelectedBtn()
         {
             EventSystem.current.SetSelectedGameObject(targetBtn.gameObject);
         }

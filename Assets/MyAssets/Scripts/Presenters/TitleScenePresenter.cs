@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using UniRx;
 
 namespace TitleScene.Presenters
@@ -32,17 +33,10 @@ namespace TitleScene.Presenters
             StorePushedBtnToModel(startBtnView.TargetBtn);
             StorePushedBtnToModel(finishBtnView.TargetBtn);
 
-            // Modelで選択されたボタン情報が変更されたらそのボタン選択状態にする
+            // Modelで選択されたボタン情報変更されたこと通知
             model.SelectedBtn
                 .Subscribe(selectedBtn => {
-                    if (startBtnView.TargetBtn == selectedBtn)
-                    {
-                        startBtnView.ChangeSelectedBtn();
-                    }
-                    else if (finishBtnView.TargetBtn == selectedBtn)
-                    {
-                        finishBtnView.ChangeSelectedBtn();
-                    }
+                    Debug.Log($"selected is changed to {selectedBtn}");
                 }).AddTo(this);
 
             // Modelで押下されたボタン情報が変更されたらすべてのボタンをdisabledにする
