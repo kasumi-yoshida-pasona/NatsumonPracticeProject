@@ -6,6 +6,7 @@ public class SceneManagerModel : MonoBehaviour
 {
     /// <summary>
     ///  LoadSceneAsyncを行い、Loadの％をPresenterへ通知
+    /// 即時実行をfalseにするような実装
     /// </summary>
 
     /// <summary>

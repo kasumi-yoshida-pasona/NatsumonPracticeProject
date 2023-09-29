@@ -12,7 +12,7 @@ namespace natsumon
         ConfirmCloseGame
     }
 
-    public class DialogModel : MonoBehaviour
+    public class DialogModel
     {
         // Dialogの状態
         public ReactiveProperty<DialogType> ShowingDialogType = new ReactiveProperty<DialogType>();

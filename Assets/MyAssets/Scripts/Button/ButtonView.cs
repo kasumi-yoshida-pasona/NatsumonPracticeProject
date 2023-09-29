@@ -26,7 +26,21 @@ namespace natsumon
         // IPointerEnterHandlerのインターフェイスを実装
         public void OnPointerEnter(PointerEventData eventData)
         {
-            EventSystem.current.SetSelectedGameObject(targetBtn.gameObject);
+            onSelectSubject.OnNext(targetBtn);
+            // EventSystem.current.SetSelectedGameObject(targetBtn.gameObject);
+        }
+
+        public void OnSelected(Button Btn)
+        {
+            if (Btn != targetBtn)
+            {
+                return;
+            }
+            if (EventSystem.current.alreadySelecting)
+            {
+                return;
+            }
+            EventSystem.current.SetSelectedGameObject(Btn.gameObject);
         }
 
         // ボタンを押下不可に設定

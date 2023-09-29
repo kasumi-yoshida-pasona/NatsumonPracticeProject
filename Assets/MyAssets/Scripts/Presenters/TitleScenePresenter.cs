@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UniRx;
+using System;
 
 namespace natsumon
 {
@@ -15,8 +16,8 @@ namespace natsumon
         [SerializeField] private ButtonView finishBtnView;
 
         // Model
-        [SerializeField] private ButtonModel buttonModel;
-        [SerializeField] private DialogModel dialogModel;
+        private ButtonModel buttonModel;
+        private DialogModel dialogModel;
 
         [SerializeField] private Canvas parent;
         // 表示するダイアログ
@@ -26,6 +27,11 @@ namespace natsumon
         {
             buttonModel = new ButtonModel();
             dialogModel = new DialogModel();
+        }
+
+        void OnDestroy()
+        {
+            buttonModel.Dispose();
         }
 
         void Start()
@@ -38,22 +44,47 @@ namespace natsumon
             StorePushedBtnToModel(startBtnView.TargetBtn);
             StorePushedBtnToModel(finishBtnView.TargetBtn);
 
+            buttonModel.SelectedBtn.Subscribe(selectedBtn => {
+                startBtnView.OnSelected(selectedBtn);
+                finishBtnView.OnSelected(selectedBtn);
+            }).AddTo(this);
+
             // Modelで押下されたボタン情報が変更されたらすべてのボタンをdisabledにする
             buttonModel.PushedBtn
                 .Subscribe(PushedBtn => {
                     if (startBtnView.TargetBtn == PushedBtn)
                     {
                         // ローディングシーンへ移動
+                        onStartBtnPressed?.Invoke();
                     } else if (finishBtnView.TargetBtn == PushedBtn)
                     {
                         // // ゲーム終了確認ダイアログ表示
                         // dialog.ShowDialog(parent);
                         // ダイアログが表示されたことをModelに通知
                         dialogModel.StoreShowDialog(DialogType.ConfirmCloseGame);
+                        // ボタンが発火したときに発火した処理をする、押されたときに何をするかダイアログ側でわかる
+                        onFinishBtnPressed?.Invoke();
                     }
                 }).AddTo(this);
 
             // dialogModel.StoreShowDialog.Subscribe()
+        }
+
+        // finishBtn
+        public IObservable<Unit> finishBtnPressed() => finishBtnView.TargetBtn.OnClickAsObservable();
+        private Action onStartBtnPressed = null;
+
+        public void SetOnStartBtnPressed(Action a)
+        {
+            onStartBtnPressed = a;
+        }
+
+
+        private Action onFinishBtnPressed = null;
+
+        public void SetOnFinishBtnPressed(Action a)
+        {
+            onFinishBtnPressed = a;
         }
 
         // Modelに選択されたボタン格納
