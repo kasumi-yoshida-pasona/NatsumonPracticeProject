@@ -1,5 +1,4 @@
-using TitleScene.Models;
-using TitleScene.Views;
+using natsumon;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,20 +6,26 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UniRx;
 
-namespace TitleScene.Presenters
+namespace natsumon
 {
     public class TitleScenePresenter : MonoBehaviour
     {
         // Button
-        [SerializeField] private TitleButtonView startBtnView;
-        [SerializeField] private TitleButtonView finishBtnView;
+        [SerializeField] private ButtonView startBtnView;
+        [SerializeField] private ButtonView finishBtnView;
 
         // Model
-        [SerializeField] private TitleSceneModel model;
+        [SerializeField] private ButtonModel buttonModel;
+        [SerializeField] private DialogModel dialogModel;
+
+        [SerializeField] private Canvas parent;
+        // 表示するダイアログ
+        [SerializeField] private DialogView dialog;
 
         void Awake()
         {
-            model = new TitleSceneModel();
+            buttonModel = new ButtonModel();
+            dialogModel = new DialogModel();
         }
 
         void Start()
@@ -33,31 +38,30 @@ namespace TitleScene.Presenters
             StorePushedBtnToModel(startBtnView.TargetBtn);
             StorePushedBtnToModel(finishBtnView.TargetBtn);
 
-            // Modelで選択されたボタン情報変更されたこと通知
-            model.SelectedBtn
-                .Subscribe(selectedBtn => {
-                    Debug.Log($"selected is changed to {selectedBtn}");
-                }).AddTo(this);
-
             // Modelで押下されたボタン情報が変更されたらすべてのボタンをdisabledにする
-            model.PushedBtn
+            buttonModel.PushedBtn
                 .Subscribe(PushedBtn => {
                     if (startBtnView.TargetBtn == PushedBtn)
                     {
                         // ローディングシーンへ移動
                     } else if (finishBtnView.TargetBtn == PushedBtn)
                     {
-                        // ゲーム終了確認ダイアログ表示
+                        // // ゲーム終了確認ダイアログ表示
+                        // dialog.ShowDialog(parent);
+                        // ダイアログが表示されたことをModelに通知
+                        dialogModel.StoreShowDialog(DialogType.ConfirmCloseGame);
                     }
                 }).AddTo(this);
+
+            // dialogModel.StoreShowDialog.Subscribe()
         }
 
         // Modelに選択されたボタン格納
-        private void StoreSelectedBtnToModel(TitleButtonView Btn)
+        private void StoreSelectedBtnToModel(ButtonView Btn)
         {
             Btn.OnSelectAsObservable()
                 .Subscribe(targetBtn => {
-                    model.StoreSelectedBtn(targetBtn);
+                    buttonModel.StoreSelectedBtn(targetBtn);
                 })
                 .AddTo(this);
         }
@@ -67,7 +71,7 @@ namespace TitleScene.Presenters
         {
             Btn.OnClickAsObservable()
                 .Subscribe(_ => {
-                    model.StorePushedBtn(Btn);
+                    buttonModel.StorePushedBtn(Btn);
                 })
                 .AddTo(this);
         }

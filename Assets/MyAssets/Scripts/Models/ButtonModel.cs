@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 
-namespace TitleScene.Models
+namespace natsumon
 {
-    public class TitleSceneModel
+    public class ButtonModel
     {
         // 選択されたボタン
         public ReactiveProperty<Button> SelectedBtn = new ReactiveProperty<Button>();
