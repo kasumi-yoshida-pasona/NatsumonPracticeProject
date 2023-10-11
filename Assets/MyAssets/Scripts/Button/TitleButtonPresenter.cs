@@ -6,8 +6,9 @@ using System.Collections.Generic;
 
 namespace natsumon
 {
-    public class ButtonPresenter : MonoBehaviour
+    public class TitleButtonPresenter : MonoBehaviour
     {
+
         // Button
         [SerializeField] private ButtonView startBtnView;
         [SerializeField] private ButtonView finishBtnView;
@@ -71,29 +72,27 @@ namespace natsumon
 
                 foreach (var btn in buttonList)
                 {
-                    btn.ChangeDisabledBtn();
+                    btn.ChangeToDisabledBtn();
                 }
             });
         }
 
         // Modelに選択されたボタン格納
-        private void StoreSelectedBtnToModel(ButtonView btn)
+        public void StoreSelectedBtnToModel(ButtonView btn)
         {
             btn.OnSelectAsObservable()
                 .Subscribe(targetBtn => {
                     buttonModel.StoreSelectedBtn(targetBtn);
-                })
-                .AddTo(this);
+                });
         }
 
         // Modelに押下されたボタン格納
-        private void StorePushedBtnToModel(Button btn)
+        public void StorePushedBtnToModel(Button btn)
         {
             btn.OnClickAsObservable()
                 .Subscribe(_ => {
                     buttonModel.StorePushedBtn(btn);
-                })
-                .AddTo(this);
+                });
         }
     }
 

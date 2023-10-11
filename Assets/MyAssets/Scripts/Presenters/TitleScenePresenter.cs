@@ -7,17 +7,17 @@ namespace natsumon
     public class TitleScenePresenter : MonoBehaviour
     {
         // 子Presenter
-        [SerializeField] private ButtonPresenter buttonPresenter;
+        [SerializeField] private TitleButtonPresenter titleButtonPresenter;
         [SerializeField] private DialogPresenter dialogPresenter;
 
         void Start()
         {
-            buttonPresenter.startBtnPressed().Subscribe(_ => {
+            titleButtonPresenter.startBtnPressed().Subscribe(_ => {
             // // ローディングシーンへ移動
             //     onStartBtnPressed?.Invoke();
             });
 
-            buttonPresenter.finishBtnPressed().Subscribe(_ => {
+            titleButtonPresenter.finishBtnPressed().Subscribe(_ => {
                 dialogPresenter.SetOnFinishBtnPressed();
             });
 

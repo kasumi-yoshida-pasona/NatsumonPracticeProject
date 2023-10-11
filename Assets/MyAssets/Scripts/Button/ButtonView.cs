@@ -39,8 +39,14 @@ namespace natsumon
             EventSystem.current.SetSelectedGameObject(Btn.gameObject);
         }
 
+        // ボタンを押下可能に設定
+        public void ChangeToAvailableBtn()
+        {
+            targetBtn.interactable = true;
+        }
+
         // ボタンを押下不可に設定
-        public void ChangeDisabledBtn()
+        public void ChangeToDisabledBtn()
         {
             targetBtn.interactable = false;
         }

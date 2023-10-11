@@ -270,7 +270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d2a119066e34e96a44346ddb883e9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonPresenter: {fileID: 1651896400}
+  titleButtonPresenter: {fileID: 1651896400}
   dialogPresenter: {fileID: 937538695}
 --- !u!4 &584822720
 Transform:
@@ -1129,7 +1129,7 @@ GameObject:
   - component: {fileID: 1651896399}
   - component: {fileID: 1651896400}
   m_Layer: 0
-  m_Name: ButtonPresenter
+  m_Name: TitleButtonPresenter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
