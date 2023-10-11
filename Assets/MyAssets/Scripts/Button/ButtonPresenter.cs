@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 using System;
+using System.Collections.Generic;
 
 namespace natsumon
 {
@@ -10,6 +11,7 @@ namespace natsumon
         // Button
         [SerializeField] private ButtonView startBtnView;
         [SerializeField] private ButtonView finishBtnView;
+        private List<ButtonView> buttonList = new List<ButtonView>();
 
         // Model
         private ButtonModel buttonModel;
@@ -18,6 +20,8 @@ namespace natsumon
         void Awake()
         {
             buttonModel = new ButtonModel();
+            buttonList.Add(startBtnView);
+            buttonList.Add(finishBtnView);
         }
 
         void OnDestroy()
@@ -27,20 +31,21 @@ namespace natsumon
 
         void Start()
         {
-            // ボタンが選択されたときの処理
-            StoreSelectedBtnToModel(startBtnView);
-            StoreSelectedBtnToModel(finishBtnView);
-
-            // ボタンが押下されたときの処理
-            StorePushedBtnToModel(startBtnView.TargetBtn);
-            StorePushedBtnToModel(finishBtnView.TargetBtn);
+            foreach (var btn in buttonList)
+            {
+                // ボタンが選択されたときの処理
+                StoreSelectedBtnToModel(btn);
+                // ボタンが押下されたときの処理
+                StorePushedBtnToModel(btn.TargetBtn);
+            }
 
             // modelで選択されたボタン情報が変更されたときの処理
             buttonModel.SelectedBtn.Subscribe(selectedBtn => {
-                startBtnView.OnSelected(selectedBtn);
-                finishBtnView.OnSelected(selectedBtn);
+                foreach (var btn in buttonList)
+                {
+                    btn.OnSelected(selectedBtn);
+                }
             }).AddTo(this);
-
         }
 
         // スタートボタン押下時に親のTitlePresenterへ通知
@@ -59,9 +64,9 @@ namespace natsumon
         .Select(_ => Unit.Default);
 
         // Modelに選択されたボタン格納
-        private void StoreSelectedBtnToModel(ButtonView Btn)
+        private void StoreSelectedBtnToModel(ButtonView btn)
         {
-            Btn.OnSelectAsObservable()
+            btn.OnSelectAsObservable()
                 .Subscribe(targetBtn => {
                     buttonModel.StoreSelectedBtn(targetBtn);
                 })
@@ -69,11 +74,11 @@ namespace natsumon
         }
 
         // Modelに押下されたボタン格納
-        private void StorePushedBtnToModel(Button Btn)
+        private void StorePushedBtnToModel(Button btn)
         {
-            Btn.OnClickAsObservable()
+            btn.OnClickAsObservable()
                 .Subscribe(_ => {
-                    buttonModel.StorePushedBtn(Btn);
+                    buttonModel.StorePushedBtn(btn);
                 })
                 .AddTo(this);
         }

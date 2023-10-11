@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UniRx;
-using UniRx.Triggers;
 
 namespace natsumon
 {
@@ -27,7 +24,6 @@ namespace natsumon
         public void OnPointerEnter(PointerEventData eventData)
         {
             onSelectSubject.OnNext(targetBtn);
-            // EventSystem.current.SetSelectedGameObject(targetBtn.gameObject);
         }
 
         public void OnSelected(Button Btn)
