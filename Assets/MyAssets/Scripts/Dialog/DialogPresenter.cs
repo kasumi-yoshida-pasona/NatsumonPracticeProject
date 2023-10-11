@@ -7,7 +7,7 @@ namespace natsumon
 {
     public class DialogPresenter : MonoBehaviour
     {
-        [SerializeField] private TitleScenePresenter titleScenePresenter;
+        // 親のCanvas
         [SerializeField] private Canvas parent;
         // 表示するダイアログ
         [SerializeField] private DialogView dialog;
@@ -17,14 +17,17 @@ namespace natsumon
             dialogModel = new DialogModel();
         }
 
-        private void Start() {
-            // titleScenePresenterで登録しているSetOnFinishBtnPressedに引数を渡している
-            titleScenePresenter.SetOnFinishBtnPressed(() => {
-                // // ゲーム終了確認ダイアログ表示
-                dialog.ShowDialog(parent);
-                // ダイアログが表示されたことをModelに通知
-                dialogModel.StoreShowDialog(DialogType.ConfirmCloseGame);
-            });
+        void OnDestroy()
+        {
+            dialogModel.Dispose();
+        }
+
+        public void SetOnFinishBtnPressed()
+        {
+            // // ゲーム終了確認ダイアログ表示
+            dialog.ShowDialog(parent);
+            // ダイアログが表示されたことをModelに通知
+            dialogModel.StoreShowDialog(DialogType.ConfirmCloseGame);
         }
     }
 

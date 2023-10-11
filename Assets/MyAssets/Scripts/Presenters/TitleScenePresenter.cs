@@ -6,18 +6,19 @@ namespace natsumon
 {
     public class TitleScenePresenter : MonoBehaviour
     {
+        // 子Presenter
         [SerializeField] private ButtonPresenter buttonPresenter;
+        [SerializeField] private DialogPresenter dialogPresenter;
 
         void Start()
         {
             buttonPresenter.startBtnPressed().Subscribe(_ => {
-            // ローディングシーンへ移動
-                onStartBtnPressed?.Invoke();
+            // // ローディングシーンへ移動
+            //     onStartBtnPressed?.Invoke();
             });
 
             buttonPresenter.finishBtnPressed().Subscribe(_ => {
-                // ボタンが発火したときに発火した処理をする、押されたときに何をするかダイアログ側でわかる
-                onFinishBtnPressed?.Invoke();
+                dialogPresenter.SetOnFinishBtnPressed();
             });
 
         }
@@ -28,11 +29,6 @@ namespace natsumon
             onStartBtnPressed = a;
         }
 
-        private Action onFinishBtnPressed = null;
-        public void SetOnFinishBtnPressed(Action a)
-        {
-            onFinishBtnPressed = a;
-        }
     }
 
 }

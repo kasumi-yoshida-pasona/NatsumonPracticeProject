@@ -271,6 +271,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonPresenter: {fileID: 1651896400}
+  dialogPresenter: {fileID: 937538695}
 --- !u!4 &584822720
 Transform:
   m_ObjectHideFlags: 0
@@ -465,9 +466,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aae760513a68350419190cbe7716f0f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  titleScenePresenter: {fileID: 584822719}
   parent: {fileID: 1504174198}
-  dialog: {fileID: 5835318612440814910, guid: 9cad550ee4b688346b81c1cf5c539db5, type: 3}
+  dialog: {fileID: 7290620315973975891, guid: 9cad550ee4b688346b81c1cf5c539db5, type: 3}
 --- !u!1 &1002898923
 GameObject:
   m_ObjectHideFlags: 0

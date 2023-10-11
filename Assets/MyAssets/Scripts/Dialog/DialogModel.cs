@@ -23,5 +23,10 @@ namespace natsumon
         {
             ShowingDialogType.Value = Dialog;
         }
+
+        public void Dispose()
+        {
+            ShowingDialogType.Dispose();
+        }
     }
 }

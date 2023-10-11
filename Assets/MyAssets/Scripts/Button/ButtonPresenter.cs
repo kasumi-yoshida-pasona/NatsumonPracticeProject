@@ -16,6 +16,14 @@ namespace natsumon
         // Model
         private ButtonModel buttonModel;
 
+        // スタートボタン押下時に親のTitlePresenterへ通知
+        private Subject<Unit> StartBtnPressed = new Subject<Unit>();
+        public IObservable<Unit> startBtnPressed() => StartBtnPressed;
+
+        // 終了ボタン押下時に親のTitlePresenterへ通知
+        private Subject<Unit> FinishBtnPressed = new Subject<Unit>();
+        public IObservable<Unit> finishBtnPressed() => FinishBtnPressed;
+
 
         void Awake()
         {
@@ -46,22 +54,27 @@ namespace natsumon
                     btn.OnSelected(selectedBtn);
                 }
             }).AddTo(this);
+
+            // modelで押下されたボタン情報が変更されたときの処理
+            buttonModel.PushedBtn.Subscribe(pressedBtn => {
+                if (!pressedBtn)
+                {
+                    return;
+                }
+
+                if (pressedBtn == startBtnView.TargetBtn)
+                {
+                    StartBtnPressed.OnNext(Unit.Default);
+                } else if (pressedBtn == finishBtnView.TargetBtn) {
+                    FinishBtnPressed.OnNext(Unit.Default);
+                }
+
+                foreach (var btn in buttonList)
+                {
+                    btn.ChangeDisabledBtn();
+                }
+            });
         }
-
-        // スタートボタン押下時に親のTitlePresenterへ通知
-        public IObservable<Unit> startBtnPressed() =>
-        buttonModel.PushedBtn
-        .Skip(1)  // 初期値をスキップ
-        .Where(btn => btn == startBtnView.TargetBtn)  // "startBtn" のときだけ通知
-        .Select(_ => Unit.Default);
-
-
-        // 終了ボタン押下時に親のTitlePresenterへ通知
-        public IObservable<Unit> finishBtnPressed() =>
-        buttonModel.PushedBtn
-        .Skip(1)  // 初期値をスキップ
-        .Where(btn => btn == finishBtnView.TargetBtn)  // "finishBtn" のときだけ通知
-        .Select(_ => Unit.Default);
 
         // Modelに選択されたボタン格納
         private void StoreSelectedBtnToModel(ButtonView btn)

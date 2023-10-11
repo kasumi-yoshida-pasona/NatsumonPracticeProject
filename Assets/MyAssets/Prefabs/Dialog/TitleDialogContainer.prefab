@@ -406,8 +406,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetBtn: {fileID: 7926473758864264694}
-  parent: {fileID: 0}
-  dialog: {fileID: 0}
 --- !u!1 &3801582526783695704
 GameObject:
   m_ObjectHideFlags: 0
@@ -496,9 +494,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1169954551201118909}
-  - component: {fileID: 5835318612440814910}
+  - component: {fileID: 7290620315973975891}
   m_Layer: 5
-  m_Name: DialogContainer
+  m_Name: TitleDialogContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -526,7 +524,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &5835318612440814910
+--- !u!114 &7290620315973975891
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -674,8 +672,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetBtn: {fileID: 5330457343990172774}
-  parent: {fileID: 0}
-  dialog: {fileID: 0}
 --- !u!1 &5322938362270465957
 GameObject:
   m_ObjectHideFlags: 0
