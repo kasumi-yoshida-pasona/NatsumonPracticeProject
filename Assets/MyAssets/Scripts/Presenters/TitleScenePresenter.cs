@@ -17,16 +17,10 @@ namespace natsumon
 
         // Model
         private ButtonModel buttonModel;
-        private DialogModel dialogModel;
-
-        [SerializeField] private Canvas parent;
-        // 表示するダイアログ
-        [SerializeField] private DialogView dialog;
 
         void Awake()
         {
             buttonModel = new ButtonModel();
-            dialogModel = new DialogModel();
         }
 
         void OnDestroy()
@@ -58,30 +52,20 @@ namespace natsumon
                         onStartBtnPressed?.Invoke();
                     } else if (finishBtnView.TargetBtn == PushedBtn)
                     {
-                        // // ゲーム終了確認ダイアログ表示
-                        // dialog.ShowDialog(parent);
-                        // ダイアログが表示されたことをModelに通知
-                        dialogModel.StoreShowDialog(DialogType.ConfirmCloseGame);
                         // ボタンが発火したときに発火した処理をする、押されたときに何をするかダイアログ側でわかる
                         onFinishBtnPressed?.Invoke();
                     }
                 }).AddTo(this);
 
-            // dialogModel.StoreShowDialog.Subscribe()
         }
 
-        // finishBtn
-        public IObservable<Unit> finishBtnPressed() => finishBtnView.TargetBtn.OnClickAsObservable();
         private Action onStartBtnPressed = null;
-
         public void SetOnStartBtnPressed(Action a)
         {
             onStartBtnPressed = a;
         }
 
-
         private Action onFinishBtnPressed = null;
-
         public void SetOnFinishBtnPressed(Action a)
         {
             onFinishBtnPressed = a;

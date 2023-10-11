@@ -22,7 +22,6 @@ namespace natsumon
         public void StoreShowDialog(DialogType Dialog)
         {
             ShowingDialogType.Value = Dialog;
-            Debug.Log(ShowingDialogType);
         }
     }
 }
