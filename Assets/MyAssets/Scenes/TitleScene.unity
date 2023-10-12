@@ -1162,6 +1162,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e6585b5b12e05045829e608d72dc891, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dialog: {fileID: 7290620315973975891, guid: 9cad550ee4b688346b81c1cf5c539db5, type: 3}
   startBtnView: {fileID: 1101420195}
   finishBtnView: {fileID: 1430756066}
 --- !u!1 &1743515540

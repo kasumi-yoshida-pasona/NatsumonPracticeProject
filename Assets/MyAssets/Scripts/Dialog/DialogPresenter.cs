@@ -13,7 +13,6 @@ namespace natsumon
         // 表示するダイアログ
         [SerializeField] private DialogView dialog;
         private DialogModel dialogModel;
-        private ButtonModel buttonModel;
 
         // Button
         private ButtonView exitBtn;
@@ -21,7 +20,6 @@ namespace natsumon
 
         private void Awake() {
             dialogModel = new DialogModel();
-            buttonModel = new ButtonModel();
             exitBtn = dialog.exitBtn;
             cancelBtn = dialog.cancelBtn;
         }
@@ -32,11 +30,25 @@ namespace natsumon
         }
 
         private void Start() {
-            exitBtn.OnSelectAsObservable()
+            cancelBtn.OnSelectAsObservable()
                 .Subscribe(targetBtn => {
-                    buttonModel.StoreSelectedBtn(targetBtn);
+                    dialogModel.StoreSelectedBtn(targetBtn);
+                    Debug.Log(targetBtn);
                 })
                 .AddTo(this);
+
+            exitBtn.OnSelectAsObservable()
+                .Subscribe(targetBtn => {
+                    dialogModel.StoreSelectedBtn(targetBtn);
+                })
+                .AddTo(this);
+
+            // modelで選択されたボタン情報が変更されたときの処理
+            dialogModel.SelectedBtn.Subscribe(selectedBtn => {
+                // cancelBtn.OnSelected(selectedBtn);
+                // exitBtn.OnSelected(selectedBtn);
+                Debug.Log(selectedBtn);
+            }).AddTo(this);
         }
 
         public void SetOnFinishBtnPressed()

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 using System;
+using UnityEngine.EventSystems;
 
 
 namespace natsumon
@@ -17,6 +18,7 @@ namespace natsumon
 
         private void Awake() {
             // 初期選択をCancelにしたい
+            EventSystem.current.SetSelectedGameObject(cancelBtn.gameObject);
         }
 
         public void ShowDialog(Canvas parent)
