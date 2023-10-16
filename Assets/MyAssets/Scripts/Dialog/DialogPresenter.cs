@@ -11,10 +11,11 @@ namespace natsumon
         // 親のCanvas
         [SerializeField] private Canvas parent;
         // 表示するダイアログ
-        [SerializeField] private DialogView dialog;
+        // [SerializeField] private DialogView dialog;
+        [SerializeField] TitleButtonPresenter buttonPresenter;
         [SerializeField] GameObject dialogPrefab;
         private DialogModel dialogModel;
-        private ButtonModel buttonModel;
+        // private ButtonModel buttonModel;
 
         // Button
         private ButtonView exitBtn;
@@ -22,20 +23,18 @@ namespace natsumon
 
         private void Awake() {
             dialogModel = new DialogModel();
-            buttonModel = new ButtonModel();
-            exitBtn = dialog.exitBtn;
-            cancelBtn = dialog.cancelBtn;
+            // buttonModel = new ButtonModel();
+            // exitBtn = dialog.exitBtn;
+            // cancelBtn = dialog.cancelBtn;
         }
 
         void OnDestroy()
         {
             dialogModel.Dispose();
-            buttonModel.Dispose();
+            // buttonModel.Dispose();
         }
 
         private void Start() {
-
-
 
             // cancelBtn.OnSelectAsObservable()
             //     .Subscribe(targetBtn => {
@@ -60,17 +59,16 @@ namespace natsumon
 
         public void SetOnFinishBtnPressed()
         {
-            Debug.Log("helloS");
             var obj = Instantiate(dialogPrefab, null);
             var dialogView = obj.GetComponent<DialogView>();
             dialogView.cancelBtn.OnSelectAsObservable()
-            .Subscribe(b => {
+                .Subscribe(b => {
                 Debug.Log(b);
-                buttonModel.StoreSelectedBtn(b);
+                buttonPresenter.StoreSelectedBtnToModel(dialogView.cancelBtn);
             }).AddTo(obj);
 
             // // ゲーム終了確認ダイアログ表示
-            dialog.ShowDialog(parent);
+            dialogView.ShowDialog(parent);
             // ダイアログが表示されたことをModelに通知
             dialogModel.StoreShowDialog(DialogType.ConfirmCloseGame);
         }

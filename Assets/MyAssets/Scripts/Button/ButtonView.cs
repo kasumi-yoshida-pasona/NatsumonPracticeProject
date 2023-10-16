@@ -17,6 +17,7 @@ namespace natsumon
         // ISelectHandlerのインターフェイスを実装
         public void OnSelect(BaseEventData eventData)
         {
+            Debug.Log(targetBtn);
             onSelectSubject.OnNext(targetBtn);
         }
 
