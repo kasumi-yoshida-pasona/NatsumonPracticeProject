@@ -39,6 +39,16 @@ namespace natsumon
             buttonModel.Dispose();
         }
 
+        // タイトルボタンの初期化
+        public void Init()
+        {
+                foreach (var btn in buttonList)
+                {
+                    btn.ActivateBtn();
+                }
+                buttonModel.StoreSelectedBtn(startBtnView.TargetBtn);
+        }
+
         void Start()
         {
             foreach (var btn in buttonList)

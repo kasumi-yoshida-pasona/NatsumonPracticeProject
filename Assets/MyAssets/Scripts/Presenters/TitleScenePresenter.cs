@@ -21,12 +21,10 @@ namespace natsumon
                 dialogPresenter.SetOnFinishBtnPressed();
             });
 
-        }
+            dialogPresenter.DialogDestroyed().Subscribe(_ => {
+                titleButtonPresenter.Init();
+            });
 
-        private Action onStartBtnPressed = null;
-        public void SetOnStartBtnPressed(Action a)
-        {
-            onStartBtnPressed = a;
         }
 
     }

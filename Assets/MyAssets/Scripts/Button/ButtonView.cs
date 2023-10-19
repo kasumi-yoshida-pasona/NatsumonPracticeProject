@@ -40,7 +40,7 @@ namespace natsumon
         }
 
         // ボタンを押下可能に設定
-        public void ChangeToAvailableBtn()
+        public void ActivateBtn()
         {
             targetBtn.interactable = true;
         }

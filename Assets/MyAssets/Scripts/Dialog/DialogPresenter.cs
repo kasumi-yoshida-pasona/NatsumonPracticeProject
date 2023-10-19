@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using UniRx;
-using UniRx.Triggers;
+using System;
 
 namespace natsumon
 {
@@ -13,18 +11,18 @@ namespace natsumon
         [SerializeField] TitleButtonPresenter buttonPresenter;
         [SerializeField] GameObject dialogPrefab;
         private DialogModel dialogModel;
-        private ButtonModel buttonModel;
+        // 親Presenterに通知するためのSubject
+        private Subject<Unit> dialogDestroyed = new Subject<Unit>();
+        public IObservable<Unit> DialogDestroyed() => dialogDestroyed;
 
 
         private void Awake() {
             dialogModel = new DialogModel();
-            buttonModel = new ButtonModel();
         }
 
         void OnDestroy()
         {
             dialogModel.Dispose();
-            buttonModel.Dispose();
         }
 
         public void SetOnFinishBtnPressed()
@@ -51,6 +49,32 @@ namespace natsumon
                 dialogView.exitBtn.OnSelected(b);
             }).AddTo(obj);
 
+            // Modelに押下されたボタン格納
+            dialogView.cancelBtn.TargetBtn.OnClickAsObservable()
+                .Subscribe(_ => {
+                    buttonPresenter.StorePushedBtnToModel(dialogView.cancelBtn.TargetBtn);
+                });
+
+            dialogView.exitBtn.TargetBtn.OnClickAsObservable()
+                .Subscribe(_ => {
+                    buttonPresenter.StorePushedBtnToModel(dialogView.exitBtn.TargetBtn);
+                });
+
+            // modelで押下されたボタン情報が変更されたときの処理
+            buttonPresenter.ButtonModel.PushedBtn.Subscribe(pressedBtn => {
+                if (!pressedBtn) return;
+                if (pressedBtn == dialogView.cancelBtn.TargetBtn)
+                {
+                    // dialogが非表示になったことを通知してdialog壊す
+                    dialogModel.StoreShowDialog(DialogType.None);
+                    Destroy(obj);
+                    // destroyしたことをtitleSceneに通知
+                    dialogDestroyed.OnNext(Unit.Default);
+                } else if (pressedBtn == dialogView.exitBtn.TargetBtn)
+                {
+                    dialogView.exitBtn.EndGame();
+                }
+            });
 
 
             // ゲーム終了確認ダイアログ表示
