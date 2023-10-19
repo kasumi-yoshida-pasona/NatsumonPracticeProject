@@ -467,7 +467,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parent: {fileID: 1504174198}
-  dialog: {fileID: 7290620315973975891, guid: 9cad550ee4b688346b81c1cf5c539db5, type: 3}
+  buttonPresenter: {fileID: 1651896400}
   dialogPrefab: {fileID: 4079513080750483101, guid: 9cad550ee4b688346b81c1cf5c539db5, type: 3}
 --- !u!1 &1002898923
 GameObject:

@@ -16,6 +16,7 @@ namespace natsumon
 
         // Model
         private ButtonModel buttonModel;
+        public ButtonModel ButtonModel => buttonModel;
 
         // スタートボタン押下時に親のTitlePresenterへ通知
         private Subject<Unit> StartBtnPressed = new Subject<Unit>();

@@ -21,10 +21,9 @@ namespace natsumon
             EventSystem.current.SetSelectedGameObject(cancelBtn.gameObject);
         }
 
-        public void ShowDialog(Canvas parent)
+        public void ShowDialog(Canvas parent, GameObject dialog)
         {
-            var _dialog = Instantiate(this);
-            _dialog.transform.SetParent(parent.transform, false);
+            dialog.transform.SetParent(parent.transform, false);
         }
     }
 }
