@@ -17,7 +17,7 @@ namespace natsumon
         public ButtonView cancelBtn => CancelBtn;
 
         private void Awake() {
-            // 初期選択をCancelにしたい
+            // 初期選択をCancelする
             EventSystem.current.SetSelectedGameObject(cancelBtn.gameObject);
         }
 

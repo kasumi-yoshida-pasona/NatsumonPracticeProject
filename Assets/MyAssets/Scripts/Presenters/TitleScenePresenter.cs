@@ -21,6 +21,7 @@ namespace natsumon
                 dialogPresenter.SetOnFinishBtnPressed();
             });
 
+            // ダイアログが破壊されたらタイトルボタンを初期化する
             dialogPresenter.DialogDestroyed().Subscribe(_ => {
                 titleButtonPresenter.Init();
             });

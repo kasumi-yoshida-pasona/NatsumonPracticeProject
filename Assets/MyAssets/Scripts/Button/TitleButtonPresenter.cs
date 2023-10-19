@@ -12,7 +12,7 @@ namespace natsumon
         // Button
         [SerializeField] private ButtonView startBtnView;
         [SerializeField] private ButtonView finishBtnView;
-        private List<ButtonView> buttonList = new List<ButtonView>();
+        private List<ButtonView> titleButtonList = new List<ButtonView>();
 
         // Model
         private ButtonModel buttonModel;
@@ -30,8 +30,8 @@ namespace natsumon
         void Awake()
         {
             buttonModel = new ButtonModel();
-            buttonList.Add(startBtnView);
-            buttonList.Add(finishBtnView);
+            titleButtonList.Add(startBtnView);
+            titleButtonList.Add(finishBtnView);
         }
 
         void OnDestroy()
@@ -42,7 +42,7 @@ namespace natsumon
         // タイトルボタンの初期化
         public void Init()
         {
-                foreach (var btn in buttonList)
+                foreach (var btn in titleButtonList)
                 {
                     btn.ActivateBtn();
                 }
@@ -51,7 +51,7 @@ namespace natsumon
 
         void Start()
         {
-            foreach (var btn in buttonList)
+            foreach (var btn in titleButtonList)
             {
                 // ボタンが選択されたときの処理
                 StoreSelectedBtnToModel(btn);
@@ -61,7 +61,7 @@ namespace natsumon
 
             // modelで選択されたボタン情報が変更されたときの処理
             buttonModel.SelectedBtn.Subscribe(selectedBtn => {
-                foreach (var btn in buttonList)
+                foreach (var btn in titleButtonList)
                 {
                     btn.OnSelected(selectedBtn);
                 }
@@ -69,10 +69,7 @@ namespace natsumon
 
             // modelで押下されたボタン情報が変更されたときの処理
             buttonModel.PushedBtn.Subscribe(pressedBtn => {
-                if (!pressedBtn)
-                {
-                    return;
-                }
+                if (!pressedBtn)return;
 
                 if (pressedBtn == startBtnView.TargetBtn)
                 {
@@ -81,10 +78,7 @@ namespace natsumon
                     FinishBtnPressed.OnNext(Unit.Default);
                 }
 
-                foreach (var btn in buttonList)
-                {
-                    btn.ChangeToDisabledBtn();
-                }
+                deactivateAllBtn(titleButtonList);
             });
         }
 
@@ -104,6 +98,15 @@ namespace natsumon
                 .Subscribe(_ => {
                     buttonModel.StorePushedBtn(btn);
                 });
+        }
+
+        // 全てのボタンを非活性にする
+        private void deactivateAllBtn(List<ButtonView> titleButtonList)
+        {
+            foreach (var btn in titleButtonList)
+            {
+                btn.ChangeToDisabledBtn();
+            }
         }
     }
 
