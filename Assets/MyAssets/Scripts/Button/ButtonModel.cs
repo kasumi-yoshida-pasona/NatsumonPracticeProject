@@ -18,7 +18,7 @@ namespace natsumon
         // 押下したボタン情報を格納
         public void StorePushedBtn(Button Btn)
         {
-            pushedBtn.Value = Btn;
+            pushedBtn.SetValueAndForceNotify(Btn);
         }
 
         // 選択したボタン情報を格納

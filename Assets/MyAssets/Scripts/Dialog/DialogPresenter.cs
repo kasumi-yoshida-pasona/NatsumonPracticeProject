@@ -1,6 +1,7 @@
 using UnityEngine;
 using UniRx;
 using System;
+using UniRx.Triggers;
 
 namespace natsumon
 {
@@ -11,6 +12,7 @@ namespace natsumon
         [SerializeField] TitleButtonPresenter buttonPresenter;
         [SerializeField] GameObject dialogPrefab;
         private DialogModel dialogModel;
+        private ButtonModel buttonModel;
         // 親Presenterに通知するためのSubject
         private Subject<Unit> dialogDestroyed = new Subject<Unit>();
         public IObservable<Unit> DialogDestroyed() => dialogDestroyed;
@@ -29,58 +31,53 @@ namespace natsumon
         {
             var obj = Instantiate(dialogPrefab, null);
             var dialogView = obj.GetComponent<DialogView>();
+            buttonModel = new ButtonModel();
 
-            // Modelに選択されたボタン格納
-            {
-            dialogView.cancelBtn.OnSelectAsObservable()
-                .Subscribe(b => {
-                    buttonPresenter.StoreSelectedBtnToModel(dialogView.cancelBtn);
-                }).AddTo(obj);
-
-            dialogView.exitBtn.OnSelectAsObservable()
-                .Subscribe(b => {
-                    buttonPresenter.StoreSelectedBtnToModel(dialogView.exitBtn);
-                }).AddTo(obj);
-            }
-
-            // modelで選択されたボタン情報が変更されたときの処理
-            buttonPresenter.ButtonModel.SelectedBtn.Subscribe(b => {
-                dialogView.cancelBtn.OnSelected(b);
-                dialogView.exitBtn.OnSelected(b);
-            }).AddTo(obj);
-
-            // Modelに押下されたボタン格納
-            dialogView.cancelBtn.TargetBtn.OnClickAsObservable()
-                .Subscribe(_ => {
-                    buttonPresenter.StorePushedBtnToModel(dialogView.cancelBtn.TargetBtn);
-                });
-
-            dialogView.exitBtn.TargetBtn.OnClickAsObservable()
-                .Subscribe(_ => {
-                    buttonPresenter.StorePushedBtnToModel(dialogView.exitBtn.TargetBtn);
-                });
-
-            // modelで押下されたボタン情報が変更されたときの処理
-            buttonPresenter.ButtonModel.PushedBtn.Subscribe(pressedBtn => {
-                if (!pressedBtn) return;
-                if (pressedBtn == dialogView.cancelBtn.TargetBtn)
-                {
-                    // dialogが非表示になったことを通知してdialog壊す
-                    dialogModel.StoreShowDialog(DialogType.None);
-                    Destroy(obj);
-                    // destroyしたことをtitleSceneに通知
-                    dialogDestroyed.OnNext(Unit.Default);
-                } else if (pressedBtn == dialogView.exitBtn.TargetBtn)
-                {
-                    dialogView.exitBtn.EndGame();
-                }
-            });
-
+            obj.OnDestroyAsObservable().Subscribe(_ => {
+                buttonModel.Dispose();
+            }).AddTo(this);
 
             // ゲーム終了確認ダイアログ表示
             dialogView.ShowDialog(parent, obj);
             // ダイアログが表示されたことをModelに通知
             dialogModel.StoreShowDialog(DialogType.ConfirmCloseGame);
+
+            // modelで選択されたボタン情報が変更されたときの処理
+            buttonModel.SelectedBtn.Subscribe(btn => {
+                dialogView.cancelBtn.OnSelected(btn);
+                dialogView.exitBtn.OnSelected(btn);
+            }).AddTo(obj);
+
+            // modelで押下されたボタン情報が変更されたときの処理
+            buttonModel.PushedBtn.Subscribe(btn => {
+                if (btn == dialogView.cancelBtn.TargetBtn)
+                {
+                    // ダイアログを壊してタイトルのボタンを初期化
+                    buttonPresenter.Init();
+                    Destroy(obj);
+                } else if (btn == dialogView.exitBtn.TargetBtn)
+                {
+                    // ゲーム終了
+                    dialogView.exitBtn.EndGame();
+                }
+            }).AddTo(obj);
+
+            // Modelに選択されたボタン格納
+            dialogView.cancelBtn.OnSelectAsObservable().Subscribe(btn => {
+                buttonModel.StoreSelectedBtn(btn);
+            }).AddTo(obj);
+            dialogView.exitBtn.OnSelectAsObservable().Subscribe(btn => {
+                buttonModel.StoreSelectedBtn(btn);
+            }).AddTo(obj);
+
+            // Modelに押下されたボタン格納
+            dialogView.cancelBtn.TargetBtn.OnClickAsObservable().Subscribe(_ => {
+                buttonModel.StorePushedBtn(dialogView.cancelBtn.TargetBtn);
+            }).AddTo(obj);
+            dialogView.exitBtn.TargetBtn.OnClickAsObservable().Subscribe(_ => {
+                buttonModel.StorePushedBtn(dialogView.exitBtn.TargetBtn);
+            }).AddTo(obj);
+
         }
     }
 

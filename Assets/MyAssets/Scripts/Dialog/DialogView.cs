@@ -16,14 +16,10 @@ namespace natsumon
         [SerializeField] ButtonView CancelBtn;
         public ButtonView cancelBtn => CancelBtn;
 
-        private void Awake() {
-            // 初期選択をCancelする
-            EventSystem.current.SetSelectedGameObject(cancelBtn.gameObject);
-        }
-
         public void ShowDialog(Canvas parent, GameObject dialog)
         {
             dialog.transform.SetParent(parent.transform, false);
+            EventSystem.current.SetSelectedGameObject(cancelBtn.gameObject);
         }
     }
 }
