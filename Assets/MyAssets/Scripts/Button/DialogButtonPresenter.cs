@@ -1,13 +1,13 @@
 using UnityEngine;
 using UniRx;
 using System;
-using UniRx.Triggers;
 
 namespace natsumon
 {
     public class DialogButtonPresenter : MonoBehaviour
     {
         [SerializeField] DialogView dialogView;
+        // [SerializeField] DialogPresenter dialogPresenter;
         private CommonButtonPresenter commonButtonPresenter;
         private ButtonModel buttonModel;
         // 親Presenterに通知するためのSubject
@@ -48,8 +48,11 @@ namespace natsumon
                 if (btn == cancelBtn.TargetBtn)
                 {
                     // ダイアログを壊してタイトルのボタンを初期化
-                    // buttonPresenter.Init();
+                    // titleScenePresenter.Init();
                     // Destroy(this);
+                    // ここまでOK
+                    // これって購読されないですか？
+                    dialogDestroyed.OnNext(Unit.Default);
                 }
                 else if (btn == exitBtn.TargetBtn)
                 {

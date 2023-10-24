@@ -1,22 +1,22 @@
 using UnityEngine;
 using UniRx;
 using System;
-using UniRx.Triggers;
 
 namespace natsumon
 {
     public class DialogPresenter : MonoBehaviour
     {
         // 親のCanvas
-        [SerializeField] private Canvas parent;
-        [SerializeField] TitleButtonPresenter buttonPresenter;
+        [SerializeField] Canvas parent;
+        [SerializeField] TitleButtonPresenter titleButtonPresenter;
+        [SerializeField] DialogButtonPresenter dialogButtonPresenter;
         [SerializeField] GameObject dialogPrefab;
         private DialogModel dialogModel;
         // private ButtonModel buttonModel;
 
         // 親Presenterに通知するためのSubject
-        private Subject<Unit> dialogDestroyed = new Subject<Unit>();
-        public IObservable<Unit> DialogDestroyed() => dialogDestroyed;
+        // private Subject<Unit> dialogDestroyed = new Subject<Unit>();
+        // public IObservable<Unit> DialogDestroyed() => dialogDestroyed;
 
 
         private GameObject obj;
@@ -36,7 +36,7 @@ namespace natsumon
         public void OnCancelBtnPressed()
         {
             // ダイアログを壊してタイトルのボタンを初期化
-            buttonPresenter.Init();
+            titleButtonPresenter.Init();
             Destroy(obj);
         }
 
@@ -56,6 +56,12 @@ namespace natsumon
             // ダイアログが表示されたことをModelに通知
             dialogModel.StoreShowDialog(DialogType.ConfirmCloseGame);
 
+            // ここでDialogButtonPresenterのDialogDestroy()をSubscribeしたかった
+            dialogButtonPresenter.DialogDestroyed().Subscribe(_ =>
+            {
+                Debug.Log($"DialogDestroyed is called");
+            }).AddTo(obj);
+
 
             // modelで選択されたボタン情報が変更されたときの処理
             // buttonModel.SelectedBtn.Subscribe(btn =>
@@ -70,7 +76,7 @@ namespace natsumon
             //     if (btn == dialogView.cancelBtn.TargetBtn)
             //     {
             // // ダイアログを壊してタイトルのボタンを初期化
-            // buttonPresenter.Init();
+            // titleButtonPresenter.Init();
             // Destroy(obj);
             //     }
             //     else if (btn == dialogView.exitBtn.TargetBtn)
