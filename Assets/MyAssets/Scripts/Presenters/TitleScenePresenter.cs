@@ -24,10 +24,10 @@ namespace natsumon
             });
 
             // ダイアログが破壊されたらタイトルボタンを初期化する
-            // dialogPresenter.DialogDestroyed().Subscribe(_ =>
-            // {
-            //     titleButtonPresenter.Init();
-            // });
+            dialogPresenter.InitTitleSceneButton().Subscribe(_ =>
+            {
+                titleButtonPresenter.Init();
+            });
 
         }
 

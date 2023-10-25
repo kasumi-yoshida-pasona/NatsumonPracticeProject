@@ -51,6 +51,7 @@ namespace natsumon
                     // titleScenePresenter.Init();
                     // Destroy(this);
                     // ここまでOK
+                    Debug.Log($"hello");
                     // これって購読されないですか？
                     dialogDestroyed.OnNext(Unit.Default);
                 }

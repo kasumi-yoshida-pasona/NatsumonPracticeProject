@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UniRx;
 using System;
 using System.Collections.Generic;
