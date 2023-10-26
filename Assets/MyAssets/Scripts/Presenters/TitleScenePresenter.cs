@@ -12,17 +12,20 @@ namespace natsumon
 
         void Start()
         {
-            titleButtonPresenter.startBtnPressed().Subscribe(_ => {
-            // // ローディングシーンへ移動
-            //     onStartBtnPressed?.Invoke();
+            titleButtonPresenter.startBtnPressed().Subscribe(_ =>
+            {
+                // // ローディングシーンへ移動
+                //     onStartBtnPressed?.Invoke();
             });
 
-            titleButtonPresenter.finishBtnPressed().Subscribe(_ => {
+            titleButtonPresenter.finishBtnPressed().Subscribe(_ =>
+            {
                 dialogPresenter.SetOnFinishBtnPressed();
             });
 
             // ダイアログが破壊されたらタイトルボタンを初期化する
-            dialogPresenter.DialogDestroyed().Subscribe(_ => {
+            dialogPresenter.InitTitleSceneButton().Subscribe(_ =>
+            {
                 titleButtonPresenter.Init();
             });
 
