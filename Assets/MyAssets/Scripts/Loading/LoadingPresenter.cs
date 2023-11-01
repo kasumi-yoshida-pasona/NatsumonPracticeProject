@@ -1,52 +1,49 @@
 using UnityEngine;
 using UniRx;
 using System;
+using UnityEngine.SceneManagement;
 
 namespace natsumon
 {
     public class LoadingPresenter : MonoBehaviour
     {
         // 親のCanvas
-            [SerializeField] Canvas parent;
-            [SerializeField] GameObject loadingPrefab;
-            private LoadingModel loadingModel;
+        [SerializeField] Canvas parent;
+        [SerializeField] GameObject loadingPrefab;
+        private LoadingModel loadingModel;
 
-            // 親Presenterに通知するためのSubject
-            private Subject<Unit> initTitleSceneButton = new Subject<Unit>();
-            public IObservable<Unit> InitTitleSceneButton() => initTitleSceneButton;
+        // 親Presenterに通知するためのSubject
+        private Subject<Unit> initTitleSceneButton = new Subject<Unit>();
+        public IObservable<Unit> InitTitleSceneButton() => initTitleSceneButton;
 
-            private GameObject obj;
+        private GameObject obj;
 
 
-            private void Awake()
+        private void Awake()
+        {
+            loadingModel = new LoadingModel();
+        }
+
+        void OnDestroy()
+        {
+            loadingModel.Dispose();
+        }
+
+        public void StartLoading(Scene scene)
+        {
+            obj = Instantiate(loadingPrefab, null);
+            var dialogView = obj.GetComponent<LoadingView>();
+
+            // Loading画面表示
+            dialogView.ShowLoading(parent, obj);
+            // 次のシーンをModelに保存
+            loadingModel.SetNextScene(scene);
+
+            loadingModel.LoadingRatio.Subscribe(loadingRatio =>
             {
-                loadingModel = new LoadingModel();
-            }
+                Debug.Log(loadingRatio);
+            }).AddTo(obj);
 
-            void OnDestroy()
-            {
-                loadingModel.Dispose();
-            }
-
-            public void StartLoading()
-            {
-                obj = Instantiate(loadingPrefab, null);
-                // var dialogView = obj.GetComponent<DialogView>();
-                // var dialogButtonPresenter = obj.GetComponent<DialogButtonPresenter>();
-
-                // // ゲーム終了確認ダイアログ表示
-                // dialogView.ShowDialog(parent, obj);
-                // // ダイアログが表示されたことをModelに通知
-                // dialogModel.StoreShowDialog(DialogType.ConfirmCloseGame);
-
-                // // キャンセルボタン押下
-                // dialogButtonPresenter.DialogDestroyed().Subscribe(_ =>
-                // {
-                //     // ダイアログを壊してタイトルのボタンを初期化
-                //     initTitleSceneButton.OnNext(Unit.Default);
-                //     Destroy(obj);
-                // }).AddTo(obj);
-
-            }
+        }
     }
 }

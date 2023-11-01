@@ -1,6 +1,7 @@
 using UnityEngine;
 using UniRx;
 using System;
+using UnityEngine.SceneManagement;
 
 namespace natsumon
 {
@@ -9,13 +10,16 @@ namespace natsumon
         // 子Presenter
         [SerializeField] private TitleButtonPresenter titleButtonPresenter;
         [SerializeField] private DialogPresenter dialogPresenter;
+        [SerializeField] private LoadingPresenter loadingPresenter;
+        private string nextScene;
 
         void Start()
         {
             titleButtonPresenter.startBtnPressed().Subscribe(_ =>
             {
-                // // ローディングシーンへ移動
-                //     onStartBtnPressed?.Invoke();
+                nextScene = "PlayScene";
+                // ローディングを表示
+                loadingPresenter.StartLoading(SceneManager.GetSceneByName(nextScene));
             });
 
             titleButtonPresenter.finishBtnPressed().Subscribe(_ =>
