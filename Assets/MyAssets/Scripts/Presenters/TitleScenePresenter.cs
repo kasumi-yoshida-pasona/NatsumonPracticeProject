@@ -19,7 +19,7 @@ namespace natsumon
             {
                 nextScene = "PlayScene";
                 // ローディングを表示
-                loadingPresenter.StartLoading(SceneManager.GetSceneByName(nextScene));
+                loadingPresenter.StartLoading(nextScene);
             });
 
             titleButtonPresenter.finishBtnPressed().Subscribe(_ =>

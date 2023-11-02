@@ -12,23 +12,24 @@ namespace natsumon
         private ReactiveProperty<float> loadingRatio = new ReactiveProperty<float>();
         public IReadOnlyReactiveProperty<float> LoadingRatio { get { return loadingRatio; } }
 
-        private int NextSceneNumber = 0;
+        private string nextScene;
 
-        public void SetNextScene(Scene scene)
+        public void SetNextScene(MonoBehaviour mono,string scene)
         {
-            NextSceneNumber = scene.buildIndex;
-            ProgressLoadingRatio();
+            nextScene = scene;
+            mono.StartCoroutine(ProgressLoadingRatio());
         }
 
         private IEnumerator ProgressLoadingRatio()
         {
-            AsyncOperation loadingOperation = SceneManager.LoadSceneAsync(NextSceneNumber);
+            AsyncOperation loadingOperation = SceneManager.LoadSceneAsync(nextScene);
             loadingOperation.allowSceneActivation = false;
 
-            while (!loadingOperation.isDone)
+            var accTime = 0f;
+            while (Mathf.Min(accTime, loadingOperation.progress) < 0.9f)
             {
-                loadingRatio.Value = loadingOperation.progress;
-                Debug.Log(loadingRatio.Value);
+                accTime += Time.deltaTime / 5;
+                loadingRatio.Value = Mathf.Min(accTime, loadingOperation.progress);
                 yield return null;
             }
         }

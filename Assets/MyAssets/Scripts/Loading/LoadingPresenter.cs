@@ -29,7 +29,7 @@ namespace natsumon
             loadingModel.Dispose();
         }
 
-        public void StartLoading(Scene scene)
+        public void StartLoading(string scene)
         {
             obj = Instantiate(loadingPrefab, null);
             var dialogView = obj.GetComponent<LoadingView>();
@@ -37,7 +37,7 @@ namespace natsumon
             // Loading画面表示
             dialogView.ShowLoading(parent, obj);
             // 次のシーンをModelに保存
-            loadingModel.SetNextScene(scene);
+            loadingModel.SetNextScene(this, scene);
 
             loadingModel.LoadingRatio.Subscribe(loadingRatio =>
             {
