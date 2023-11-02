@@ -1,7 +1,5 @@
 using UnityEngine;
 using UniRx;
-using System;
-using UnityEngine.SceneManagement;
 
 namespace natsumon
 {

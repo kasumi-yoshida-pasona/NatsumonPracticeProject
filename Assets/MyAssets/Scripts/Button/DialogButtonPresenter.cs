@@ -7,7 +7,6 @@ namespace natsumon
     public class DialogButtonPresenter : MonoBehaviour
     {
         [SerializeField] DialogView dialogView;
-        // [SerializeField] DialogPresenter dialogPresenter;
         private CommonButtonPresenter commonButtonPresenter;
         private ButtonModel buttonModel;
         // 親Presenterに通知するためのSubject
@@ -48,11 +47,6 @@ namespace natsumon
                 if (btn == cancelBtn.TargetBtn)
                 {
                     // ダイアログを壊してタイトルのボタンを初期化
-                    // titleScenePresenter.Init();
-                    // Destroy(this);
-                    // ここまでOK
-                    Debug.Log($"hello");
-                    // これって購読されないですか？
                     dialogDestroyed.OnNext(Unit.Default);
                 }
                 else if (btn == exitBtn.TargetBtn)

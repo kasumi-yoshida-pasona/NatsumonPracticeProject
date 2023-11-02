@@ -1,7 +1,6 @@
 using UnityEngine;
 using UniRx;
 using System;
-using UnityEngine.SceneManagement;
 
 namespace natsumon
 {
@@ -18,6 +17,8 @@ namespace natsumon
 
         private GameObject obj;
 
+        private float loadingProgressCorrectionFactor = 1f / 0.9f;
+
 
         private void Awake()
         {
@@ -32,16 +33,17 @@ namespace natsumon
         public void StartLoading(string scene)
         {
             obj = Instantiate(loadingPrefab, null);
-            var dialogView = obj.GetComponent<LoadingView>();
+            var loadingView = obj.GetComponent<LoadingView>();
 
             // Loading画面表示
-            dialogView.ShowLoading(parent, obj);
+            loadingView.ShowLoadingPanel(parent, obj);
             // 次のシーンをModelに保存
             loadingModel.SetNextScene(this, scene);
 
             loadingModel.LoadingRatio.Subscribe(loadingRatio =>
             {
-                Debug.Log(loadingRatio);
+                // そのままだと0.9までしかいかないので最大1にするための値を掛ける
+                loadingView.UnveilFireworksByLoadingRatio(loadingRatio * loadingProgressCorrectionFactor);
             }).AddTo(obj);
 
         }

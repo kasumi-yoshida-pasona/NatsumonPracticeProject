@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UniRx;
 using System.Collections;
@@ -14,12 +13,14 @@ namespace natsumon
 
         private string nextScene;
 
+        // 次のシーンを一時保存してロード開始
         public void SetNextScene(MonoBehaviour mono,string scene)
         {
             nextScene = scene;
             mono.StartCoroutine(ProgressLoadingRatio());
         }
 
+        // ロード率を進行させる
         private IEnumerator ProgressLoadingRatio()
         {
             AsyncOperation loadingOperation = SceneManager.LoadSceneAsync(nextScene);
@@ -32,6 +33,8 @@ namespace natsumon
                 loadingRatio.Value = Mathf.Min(accTime, loadingOperation.progress);
                 yield return null;
             }
+
+            loadingOperation.allowSceneActivation = true;
         }
 
         public void Dispose()

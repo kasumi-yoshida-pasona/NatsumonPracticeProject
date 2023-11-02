@@ -2,19 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UniRx;
-using System;
-using UnityEngine.EventSystems;
 
 
 namespace natsumon
 {
     public class LoadingView : MonoBehaviour
     {
+        float loadingRatio = 0f;
+        [SerializeField] private Image FireworkImage;
 
-        public void ShowLoading(Canvas parent, GameObject loadingPanel)
+        void Start()
+        {
+            FireworkImage.fillAmount = loadingRatio;
+        }
+
+        // ローディングパネルの表示
+        public void ShowLoadingPanel(Canvas parent, GameObject loadingPanel)
         {
             loadingPanel.transform.SetParent(parent.transform, false);
+        }
+
+        // ロード率に準じて花火の画像を出現
+        public void UnveilFireworksByLoadingRatio(float ratio)
+        {
+            loadingRatio = ratio;
+            FireworkImage.fillAmount = loadingRatio;
         }
     }
 }
