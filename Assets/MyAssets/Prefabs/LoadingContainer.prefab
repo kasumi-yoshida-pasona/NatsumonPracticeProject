@@ -593,6 +593,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FireworkImage: {fileID: 6952975601959192742}
+  loadingWords: {fileID: 5850341442583466361}
 --- !u!1 &2653077579438045182
 GameObject:
   m_ObjectHideFlags: 0
