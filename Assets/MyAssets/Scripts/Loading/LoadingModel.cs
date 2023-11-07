@@ -14,7 +14,7 @@ namespace natsumon
         private string nextScene;
 
         // 次のシーンを一時保存してロード開始
-        public void SetNextScene(MonoBehaviour mono,string scene)
+        public void SetNextScene(MonoBehaviour mono, string scene)
         {
             nextScene = scene;
             mono.StartCoroutine(ProgressLoadingRatio());
@@ -29,7 +29,7 @@ namespace natsumon
             var accTime = 0f;
             while (Mathf.Min(accTime, loadingOperation.progress) < 0.9f)
             {
-                accTime += Time.deltaTime / 5;
+                accTime += Time.deltaTime / 15;
                 loadingRatio.Value = Mathf.Min(accTime, loadingOperation.progress);
                 yield return null;
             }

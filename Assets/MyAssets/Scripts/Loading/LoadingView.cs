@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-using Unity.VisualScripting;
 
 
 namespace natsumon
@@ -13,12 +12,16 @@ namespace natsumon
         float loadingRatio = 0f;
         [SerializeField] private Image FireworkImage;
         [SerializeField] private GameObject loadingWords;
-        private List<GameObject> WordsList = new List<GameObject>();
+        private List<RectTransform> WordsList = new List<RectTransform>();
+        private bool isLoopLoading = true;
 
 
         void Start()
         {
             FireworkImage.fillAmount = loadingRatio;
+            // RectTransformのレイアウトを即座に更新
+            LayoutRebuilder.ForceRebuildLayoutImmediate(loadingWords.GetComponent<RectTransform>());
+
             setLoadingWordsInList();
         }
 
@@ -27,7 +30,7 @@ namespace natsumon
             for (int i = 0; i < loadingWords.transform.childCount; i++)
             {
                 // 子要素のGameObjectをリストに追加
-                WordsList.Add(loadingWords.transform.GetChild(i).gameObject);
+                WordsList.Add(loadingWords.transform.GetChild(i).gameObject.GetComponent<RectTransform>());
             }
 
             JumpingWords();
@@ -39,11 +42,22 @@ namespace natsumon
             foreach (var word in WordsList)
             {
                 var position = word.transform.position;
-                sequence.Append(word.transform.DOJump(position, 1.0f, 1, 1.0f));
-                Debug.Log(position);
+                float jumpPower = Random.Range(5.0f, 25.0f);
+                sequence.Append(word.DOJump(position, jumpPower, 1, 0.8f));
             }
 
-            sequence.Play();
+            // sequence.Play().OnComplete(() => sequence.Kill());
+            sequence.OnComplete(() =>
+            {
+                if (isLoopLoading)
+                {
+                    sequence.Restart(); // 最初から再スタート
+                }
+                else
+                {
+                    sequence.Kill(); // ループ終了時にSequenceを破棄
+                }
+            });
         }
 
         // ローディングパネルの表示
@@ -57,6 +71,17 @@ namespace natsumon
         {
             loadingRatio = ratio;
             FireworkImage.fillAmount = loadingRatio;
+        }
+
+        public void StopLoopLoading()
+        {
+            isLoopLoading = false;
+        }
+
+        // 呼ばれていない？
+        void OnDestroy()
+        {
+            StopLoopLoading();
         }
 
     }
