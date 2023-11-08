@@ -40,10 +40,22 @@ namespace natsumon
             // 次のシーンをModelに保存
             loadingModel.SetNextScene(this, scene);
 
+            loadingView.IsReadyForSettingWords.Subscribe(isReady =>
+            {
+                if (isReady)
+                {
+                    loadingView.JumpingWords();
+                }
+            }).AddTo(obj);
+
             loadingModel.LoadingRatio.Subscribe(loadingRatio =>
             {
                 // そのままだと0.9までしかいかないので最大1にするための値を掛ける
                 loadingView.UnveilFireworksByLoadingRatio(loadingRatio * loadingProgressCorrectionFactor);
+                if (loadingRatio == 0.9f)
+                {
+                    loadingView.StopLoopLoading();
+                }
             }).AddTo(obj);
 
         }
