@@ -29,7 +29,7 @@ namespace natsumon
             var accTime = 0f;
             while (Mathf.Min(accTime, loadingOperation.progress) < 0.9f)
             {
-                accTime += Time.deltaTime / 15;
+                accTime += Time.deltaTime / 5;
                 loadingRatio.Value = Mathf.Min(accTime, loadingOperation.progress);
                 yield return null;
             }

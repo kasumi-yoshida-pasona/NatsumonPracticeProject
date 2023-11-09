@@ -45,7 +45,7 @@ namespace natsumon
             foreach (var word in WordsList)
             {
                 var position = word.transform.position;
-                float jumpPower = Random.Range(5.0f, 25.0f);
+                float jumpPower = Random.Range(50.0f, 150.0f);
                 sequence.Append(word.DOJump(position, jumpPower, 1, 0.8f));
             }
 

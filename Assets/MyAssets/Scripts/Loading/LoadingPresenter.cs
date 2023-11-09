@@ -1,6 +1,5 @@
 using UnityEngine;
 using UniRx;
-using System;
 
 namespace natsumon
 {
@@ -8,21 +7,19 @@ namespace natsumon
     {
         // 親のCanvas
         [SerializeField] Canvas parent;
+        // Loading画面
         [SerializeField] GameObject loadingPrefab;
         private LoadingModel loadingModel;
 
-        // 親Presenterに通知するためのSubject
-        private Subject<Unit> initTitleSceneButton = new Subject<Unit>();
-        public IObservable<Unit> InitTitleSceneButton() => initTitleSceneButton;
-
         private GameObject obj;
-
-        private float loadingProgressCorrectionFactor = 1f / 0.9f;
+        // Modelから渡ってくるロード率が0.9までなので、0.9の時に1になる用の値
+        private float loadingProgressCorrectionFactor;
 
 
         private void Awake()
         {
             loadingModel = new LoadingModel();
+            loadingProgressCorrectionFactor = 1f / 0.9f;
         }
 
         void OnDestroy()
@@ -32,7 +29,7 @@ namespace natsumon
 
         public void StartLoading(string scene)
         {
-            obj = Instantiate(loadingPrefab, null);
+            obj = Instantiate(loadingPrefab, parent.transform);
             var loadingView = obj.GetComponent<LoadingView>();
 
             // Loading画面表示
