@@ -6,41 +6,66 @@ namespace natsumon
 {
     public class PlayerView : MonoBehaviour
     {
-        // Actionをインスペクターから編集できるようにする
-        [SerializeField] private InputAction _action;
+        CharacterController characterController;
+        PlayerInput playerInput;
+        Animator animator;
 
-        // 有効化
-        private void OnEnable()
+        // 移動速度
+        private float walkSpeed = 2f;
+        private float runSpeed = 4f;
+        private float rotationSpeed = 720f;
+
+        bool isRunning = false;
+        Vector2 input = Vector2.zero;
+
+        private void Start()
         {
-            // Actionのコールバックを登録
-            _action.performed += OnMove;
-            _action.canceled += OnMove;
-
-            // InputActionを有効化
-            // これをしないと入力を受け取れないことに注意
-            _action?.Enable();
+            characterController = GetComponent<CharacterController>();
+            playerInput = GetComponent<PlayerInput>();
+            animator = GetComponent<Animator>();
         }
 
-        // 無効化
-        private void OnDisable()
+        private void Update()
         {
-            // Actionのコールバックを解除
-            _action.performed -= OnMove;
-            _action.canceled -= OnMove;
+            var velocity = Vector3.zero;
 
-            // 自身が無効化されるタイミングなどで
-            // Actionを無効化する必要がある
-            _action?.Disable();
+
+            // 方向キーの入力があったら、その向きにキャラクターを回転させる
+            if (input.magnitude != 0)
+            {
+
+                Vector3 playerDirection = Vector3.Normalize(new Vector3(input.x, 0, input.y));
+                Quaternion characterTargetRotation = Quaternion.LookRotation(playerDirection);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, characterTargetRotation, rotationSpeed * Time.deltaTime);
+            }
+
+            // 移動速度の計算
+            float speedByStick = input.magnitude;
+            float moveSpeed = walkSpeed * speedByStick;
+
+            if (isRunning)
+            {
+                moveSpeed *= runSpeed;
+            }
+            velocity = transform.forward * moveSpeed;
+
+            // アニメーションの速度設定
+            animator.SetFloat("Speed", moveSpeed);
+
+            // キャラクターの移動
+            characterController.Move(velocity * Time.deltaTime);
+
         }
 
-        // コールバックを受け取ったときの処理
-        private void OnMove(InputAction.CallbackContext context)
+        public void OnMove(InputValue value)
         {
-            // Actionの入力値を読み込む
-            var value = context.ReadValue<Vector2>();
-
-            // 入力値をログ出力
-            Debug.Log($"移動量 : {value}");
+            input = value.Get<Vector2>();
         }
+
+        public void OnSprint(InputValue value)
+        {
+            isRunning = value.isPressed;
+        }
+
     }
 }
