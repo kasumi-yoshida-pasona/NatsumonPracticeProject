@@ -25,21 +25,21 @@
                 },
                 {
                     "name": "Jump",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "ac8fd9a6-1e0e-43a7-b520-7199b0677930",
-                    "expectedControlType": "Vector2",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
                 },
                 {
                     "name": "Run",
-                    "type": "PassThrough",
+                    "type": "Value",
                     "id": "69b5e494-13de-48c7-a197-db12bfaac029",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [

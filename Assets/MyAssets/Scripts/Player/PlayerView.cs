@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 
 namespace natsumon
 {
+    [RequireComponent(typeof(CharacterController))]
+
     public class PlayerView : MonoBehaviour
     {
         CharacterController characterController;
@@ -11,9 +13,9 @@ namespace natsumon
         Animator animator;
 
         // 移動速度
-        private float walkSpeed = 2f;
-        private float runSpeed = 4f;
-        private float rotationSpeed = 720f;
+        [SerializeField] private float walkSpeed = 2f;
+        [SerializeField] private float runSpeed = 4f;
+        private float rotationSpeed = 70f;
 
         bool isRunning = false;
         Vector2 input = Vector2.zero;
@@ -29,12 +31,11 @@ namespace natsumon
         {
             var velocity = Vector3.zero;
 
+            Vector3 playerDirection = Vector3.Normalize(new Vector3(input.x, 0, input.y));
 
             // 方向キーの入力があったら、その向きにキャラクターを回転させる
             if (input.magnitude != 0)
             {
-
-                Vector3 playerDirection = Vector3.Normalize(new Vector3(input.x, 0, input.y));
                 Quaternion characterTargetRotation = Quaternion.LookRotation(playerDirection);
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, characterTargetRotation, rotationSpeed * Time.deltaTime);
             }
@@ -47,7 +48,7 @@ namespace natsumon
             {
                 moveSpeed *= runSpeed;
             }
-            velocity = transform.forward * moveSpeed;
+            velocity = transform.rotation * playerDirection;
 
             // アニメーションの速度設定
             animator.SetFloat("Speed", moveSpeed);
@@ -61,11 +62,18 @@ namespace natsumon
         {
             input = value.Get<Vector2>();
         }
+        public void OnJump(InputAction.CallbackContext context)
+        {
+            // ボタンが押された瞬間かつ着地している時だけ処理
+            // if (!context.performed || !_characterController.isGrounded) return;
+
+            // // 鉛直上向きに速度を与える
+            // _verticalVelocity = _jumpSpeed;
+        }
 
         public void OnSprint(InputValue value)
         {
             isRunning = value.isPressed;
         }
-
     }
 }
