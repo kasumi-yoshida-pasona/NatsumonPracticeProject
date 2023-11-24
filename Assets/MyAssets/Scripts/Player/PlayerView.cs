@@ -1,79 +1,66 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 
 namespace natsumon
 {
+    [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(CharacterController))]
-
-    public class PlayerView : MonoBehaviour
+    public class PlayerMover : MonoBehaviour
     {
-        CharacterController characterController;
-        PlayerInput playerInput;
-        Animator animator;
+        [SerializeField] private float _moveForce = 5;
+        [SerializeField] private float _jumpForce = 5;
 
-        // 移動速度
-        [SerializeField] private float walkSpeed = 2f;
-        [SerializeField] private float runSpeed = 4f;
-        private float rotationSpeed = 70f;
+        private Rigidbody _rigidbody;
+        private MyInputActions _gameInputs;
+        private Vector2 _moveInputValue;
 
-        bool isRunning = false;
-        Vector2 input = Vector2.zero;
-
-        private void Start()
+        private void Awake()
         {
-            characterController = GetComponent<CharacterController>();
-            playerInput = GetComponent<PlayerInput>();
-            animator = GetComponent<Animator>();
+            _rigidbody = GetComponent<Rigidbody>();
+
+            // Actionスクリプトのインスタンス生成
+            _gameInputs = new MyInputActions();
+
+            // Actionイベント登録
+            _gameInputs.Player.Move.started += OnMove;
+            _gameInputs.Player.Move.performed += OnMove;
+            _gameInputs.Player.Move.canceled += OnMove;
+            _gameInputs.Player.Jump.performed += OnJump;
+
+            // Input Actionを機能させるためには、
+            // 有効化する必要がある
+            _gameInputs.Enable();
         }
 
-        private void Update()
+        private void OnDestroy()
         {
-            var velocity = Vector3.zero;
-
-            Vector3 playerDirection = Vector3.Normalize(new Vector3(input.x, 0, input.y));
-
-            // 方向キーの入力があったら、その向きにキャラクターを回転させる
-            if (input.magnitude != 0)
-            {
-                Quaternion characterTargetRotation = Quaternion.LookRotation(playerDirection);
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, characterTargetRotation, rotationSpeed * Time.deltaTime);
-            }
-
-            // 移動速度の計算
-            float speedByStick = input.magnitude;
-            float moveSpeed = walkSpeed * speedByStick;
-
-            if (isRunning)
-            {
-                moveSpeed *= runSpeed;
-            }
-            velocity = transform.rotation * playerDirection;
-
-            // アニメーションの速度設定
-            animator.SetFloat("Speed", moveSpeed);
-
-            // キャラクターの移動
-            characterController.Move(velocity * Time.deltaTime);
-
+            // 自身でインスタンス化したActionクラスはIDisposableを実装しているので、
+            // 必ずDisposeする必要がある
+            _gameInputs?.Dispose();
         }
 
-        public void OnMove(InputValue value)
+        private void OnMove(InputAction.CallbackContext context)
         {
-            input = value.Get<Vector2>();
-        }
-        public void OnJump(InputAction.CallbackContext context)
-        {
-            // ボタンが押された瞬間かつ着地している時だけ処理
-            // if (!context.performed || !_characterController.isGrounded) return;
-
-            // // 鉛直上向きに速度を与える
-            // _verticalVelocity = _jumpSpeed;
+            // Moveアクションの入力取得
+            _moveInputValue = context.ReadValue<Vector2>();
         }
 
-        public void OnSprint(InputValue value)
+        private void OnJump(InputAction.CallbackContext context)
         {
-            isRunning = value.isPressed;
+            // ジャンプする力を与える
+            _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+        }
+
+        private void FixedUpdate()
+        {
+            // 移動方向の力を与える
+            _rigidbody.AddForce(new Vector3(
+                _moveInputValue.x,
+                0,
+                _moveInputValue.y
+            ) * _moveForce);
         }
     }
 }
