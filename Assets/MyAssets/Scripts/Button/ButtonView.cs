@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UniRx;
-using Unity.VisualScripting;
 
 namespace natsumon
 {
@@ -29,8 +28,8 @@ namespace natsumon
 
         public void OnSelected(Button Btn)
         {
-            if (Btn != targetBtn)return;
-            if (EventSystem.current.alreadySelecting)return;
+            if (Btn != targetBtn) return;
+            if (EventSystem.current.alreadySelecting) return;
 
             EventSystem.current.SetSelectedGameObject(Btn.gameObject);
         }
