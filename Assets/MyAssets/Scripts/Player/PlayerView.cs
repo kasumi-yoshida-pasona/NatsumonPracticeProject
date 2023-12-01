@@ -39,7 +39,7 @@ namespace natsumon
 
             // キャラクターの向き
             // 入力されたZ軸方向とPlayerFollowerの正面方向、入力されたX軸方向とplayerFollowerの前後方向を正規化した値
-            Vector3 nextDirection = (playerFollower.transform.forward * inputDirection.x + playerFollower.transform.right * inputDirection.x).normalized;
+            Vector3 nextDirection = (playerFollower.transform.forward * inputDirection.z + playerFollower.transform.right * inputDirection.x).normalized;
 
             // キャラクターの角度をDirectionの方向へ変える
             // 現在の位置に角度を加算すればできるはず
