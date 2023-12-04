@@ -19,7 +19,7 @@ namespace natsumon
 
         bool isRunning = false;
         Vector2 input = Vector2.zero;
-        float cameraDirection = 0f;
+        Vector3 cameraDirection;
 
 
         void Start()
@@ -41,8 +41,7 @@ namespace natsumon
             // 入力されたZ軸方向とPlayerFollowerの正面方向、入力されたX軸方向とplayerFollowerの前後方向を正規化した値
             Vector3 nextDirection = (playerFollower.transform.forward * inputDirection.z + playerFollower.transform.right * inputDirection.x).normalized;
 
-            // キャラクターの角度をDirectionの方向へ変える
-            // 現在の位置に角度を加算すればできるはず
+            // 現在の位置に角度を加算してキャラクターの角度をDirectionの方向へ変える
             var nextPos = transform.position + nextDirection;
             this.transform.LookAt(nextPos);
 
@@ -55,9 +54,13 @@ namespace natsumon
             characterController.Move(nextDirection * Time.deltaTime * moveSpeed);
 
 
-            // カメラの向きが０以外であれば入力された方向に1度角度変更（変更する角度は後で調整）
+
             // カメラのtransform更新
             playerFollower.transform.position = this.transform.position;
+
+            // カメラの向きが０以外であれば入力された方向に1度角度変更（変更する角度は後で調整）
+            // nextDirection = nextDirection + cameraDirection;
+            playerFollower.transform.rotation = this.transform.rotation;
 
 
 
@@ -75,8 +78,10 @@ namespace natsumon
         }
         public void OnRotateCamera(InputValue value)
         {
-            cameraDirection = value.Get<float>();
+            var xAxis = value.Get<float>();
+            cameraDirection = new Vector3(xAxis, 0f, 0f);
             Debug.Log(cameraDirection);
+
             // 1が右、０が入力なし、−１が左
         }
     }
