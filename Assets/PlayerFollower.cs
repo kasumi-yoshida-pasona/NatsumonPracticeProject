@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -7,16 +5,15 @@ namespace natsumon
 {
     public class PlayerFollower : MonoBehaviour
     {
-        // Start is called before the first frame update
-        // void Start()
-        // {
-        //     Debug.Log(this.transform);
-        // }
+        float angle = 0.1f;
+        public void UpdatePlayerFollower(Vector3 characterPosition, Vector3 axis)
+        {
+            // カメラのtransform.position更新
+            this.transform.position = characterPosition;
 
-        // private void Update()
-        // {
-        //     Debug.Log(this.transform.position);
-        // }
+            // 左右の入力がされている間は、入力された方向に角度変更
+            this.transform.Rotate(axis, angle);
+        }
 
     }
 }
