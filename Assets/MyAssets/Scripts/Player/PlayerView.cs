@@ -55,6 +55,14 @@ namespace natsumon
             if (isRunning)
                 moveSpeed *= sprintSpeedUpRatio;
 
+            if (nextDirection.magnitude > 0.1f)
+            {
+                animator.SetFloat("Speed", nextDirection.magnitude);
+            }
+            else
+            {
+                animator.SetFloat("Speed", 0f);
+            }
             // キャラクターの移動
             characterController.Move((nextDirection + new Vector3(0, -verticalVelocity, 0)) * Time.deltaTime * moveSpeed);
 
@@ -87,7 +95,6 @@ namespace natsumon
         public void OnMove(InputValue value)
         {
             input = value.Get<Vector2>();
-            Debug.Log(characterController.isGrounded);
         }
 
         public void OnSprint(InputValue value)

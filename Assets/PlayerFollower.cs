@@ -5,7 +5,7 @@ namespace natsumon
 {
     public class PlayerFollower : MonoBehaviour
     {
-        float angle = 0.1f;
+        float angle = 0.2f;
         public void UpdatePlayerFollower(Vector3 characterPosition, Vector3 axis)
         {
             // カメラのtransform.position更新
