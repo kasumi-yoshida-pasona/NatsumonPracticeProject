@@ -19,6 +19,10 @@ namespace natsumon
         bool isRunning = false;
         Vector2 input = Vector2.zero;
         Vector3 cameraDirection;
+        private bool isGroundedPrev;
+        private float initSpeed = 2f;
+        private float gravity = 5f;
+        private float verticalVelocity;
 
 
         void Start()
@@ -32,12 +36,14 @@ namespace natsumon
 
         void Update()
         {
+
             Vector3 inputDirection = new Vector3(input.x, 0, input.y);
-            // 方向キーの入力がなかったらReturn
-            // if (inputDirection == Vector3.zero) return;
+
+            calcGravity();
 
             // キャラクターの向き
             // 入力されたZ軸方向とPlayerFollowerの正面方向、入力されたX軸方向とplayerFollowerの前後方向を正規化した値
+            // 重力をY軸に入れる
             Vector3 nextDirection = (playerFollower.transform.forward * inputDirection.z + playerFollower.transform.right * inputDirection.x).normalized;
 
             // 現在の位置に角度を加算してキャラクターの角度をDirectionの方向へ変える
@@ -50,7 +56,7 @@ namespace natsumon
                 moveSpeed *= sprintSpeedUpRatio;
 
             // キャラクターの移動
-            characterController.Move(nextDirection * Time.deltaTime * moveSpeed);
+            characterController.Move((nextDirection + new Vector3(0, -verticalVelocity, 0)) * Time.deltaTime * moveSpeed);
 
             // カメラ位置更新
             playerFollower.UpdatePlayerFollower(this.transform.position, cameraDirection);
@@ -61,10 +67,27 @@ namespace natsumon
             // animator.SetFloat("MoveSpeed", moveSpeed);
         }
 
+        private void calcGravity()
+        {
+            var isGrounded = characterController.isGrounded;
+            // 接地直前はスピードを緩める
+            if (isGrounded && !isGroundedPrev)
+            {
+                verticalVelocity = initSpeed;
+            }
+            else if (!isGrounded) // 接地していなかったら重力の計算をする(落下速度 ＝ 初速度 + 重力加速度 * 時間)
+            {
+                verticalVelocity = gravity + Time.deltaTime;
+            }
+
+            isGroundedPrev = isGrounded;
+        }
+
         // InputActionに設定しているActionsのコールバックたち
         public void OnMove(InputValue value)
         {
             input = value.Get<Vector2>();
+            Debug.Log(characterController.isGrounded);
         }
 
         public void OnSprint(InputValue value)
