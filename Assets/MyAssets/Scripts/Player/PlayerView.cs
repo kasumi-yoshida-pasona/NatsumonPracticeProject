@@ -56,19 +56,24 @@ namespace natsumon
             var nextPos = transform.position + nextDirection;
             this.transform.LookAt(nextPos);
 
-            // 移動速度
-            float moveSpeed = walkSpeed;
-            if (isRunning)
-                moveSpeed *= sprintSpeedUpRatio;
-
+            // キャラクターの移動がある時はアニメーションのSpeedにセットする
             if (nextDirection.magnitude > 0.1f)
             {
-                animator.SetFloat("Speed", nextDirection.magnitude);
+                animator.SetFloat("Speed", 0.5f);
             }
             else
             {
                 animator.SetFloat("Speed", 0f);
             }
+
+            // 移動速度
+            float moveSpeed = walkSpeed;
+            if (isRunning)
+            {
+                moveSpeed *= sprintSpeedUpRatio;
+                animator.SetFloat("Speed", 1f);
+            }
+
             // キャラクターの移動
             characterController.Move((nextDirection + new Vector3(0, -verticalVelocity, 0)) * Time.deltaTime * moveSpeed);
 

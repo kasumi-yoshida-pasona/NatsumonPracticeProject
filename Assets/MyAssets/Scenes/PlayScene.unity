@@ -411,7 +411,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: aa4cb693f737e485392c9e4543da646c, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -839,11 +839,19 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -2879648253285947292, guid: 6ff2c180630f64dfba9a24d4e7685a54, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6ff2c180630f64dfba9a24d4e7685a54, type: 3}
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6ff2c180630f64dfba9a24d4e7685a54, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9149302377039075531, guid: 6ff2c180630f64dfba9a24d4e7685a54, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
