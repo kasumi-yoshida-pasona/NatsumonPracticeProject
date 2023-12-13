@@ -19,10 +19,16 @@ namespace natsumon
         bool isRunning = false;
         Vector2 input = Vector2.zero;
         Vector3 cameraDirection;
+
+        // 重力
         private bool isGroundedPrev;
         private float initSpeed = 2f;
         private float gravity = 5f;
         private float verticalVelocity;
+
+        // ジャンプ
+        private float jumpPower = 3f;
+        private bool isJumping = false;
 
 
         void Start()
@@ -69,10 +75,6 @@ namespace natsumon
             // カメラ位置更新
             playerFollower.UpdatePlayerFollower(this.transform.position, cameraDirection);
 
-
-
-            // // アニメーションの速度設定
-            // animator.SetFloat("MoveSpeed", moveSpeed);
         }
 
         private void calcGravity()
@@ -85,7 +87,16 @@ namespace natsumon
             }
             else if (!isGrounded) // 接地していなかったら重力の計算をする(落下速度 ＝ 初速度 + 重力加速度 * 時間)
             {
-                verticalVelocity = gravity + Time.deltaTime;
+                verticalVelocity += gravity * Time.deltaTime;
+                if (gravity < verticalVelocity)
+                {
+                    verticalVelocity = gravity;
+                }
+            }
+            else if (isGrounded && isJumping) // ジャンプ時
+            {
+                verticalVelocity = -jumpPower;
+                isJumping = false;
             }
 
             isGroundedPrev = isGrounded;
@@ -100,6 +111,12 @@ namespace natsumon
         public void OnSprint(InputValue value)
         {
             isRunning = value.isPressed;
+        }
+
+        public void OnJump(InputValue value)
+        {
+            if (characterController.isGrounded)
+                isJumping = value.isPressed;
         }
 
         public void OnRotateCamera(InputValue value)
