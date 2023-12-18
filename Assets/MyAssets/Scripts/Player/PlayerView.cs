@@ -14,7 +14,6 @@ namespace natsumon
         // 移動速度
         private float walkSpeed = 2f;
         private float sprintSpeedUpRatio = 4f;
-        private float rotationSpeed = 720f;
 
         bool isRunning = false;
         Vector2 input = Vector2.zero;
@@ -35,7 +34,7 @@ namespace natsumon
         {
             characterController = GetComponent<CharacterController>();
             playerInput = GetComponent<PlayerInput>();
-            animator = GetComponent<Animator>();
+            animator = GetComponentInChildren<Animator>();
 
             playerInput.enabled = true;
         }
@@ -98,7 +97,7 @@ namespace natsumon
                     verticalVelocity = gravity;
                 }
             }
-            else if (isGrounded && isJumping) // ジャンプ時
+            else if (isJumping) // ジャンプ時
             {
                 verticalVelocity = -jumpPower;
                 isJumping = false;
