@@ -12,8 +12,9 @@ namespace natsumon
         Animator animator;
 
         // 移動速度
-        private float walkSpeed = 2f;
-        private float sprintSpeedUpRatio = 4f;
+        private float moveSpeed = 0f;
+        private float walkSpeedRatio = 0.01f;
+        private float sprintSpeedUpRatio = 0.02f;
 
         bool isRunning = false;
         Vector2 input = Vector2.zero;
@@ -44,6 +45,7 @@ namespace natsumon
 
             Vector3 inputDirection = new Vector3(input.x, 0, input.y);
 
+            // 重力の計算
             calcGravity();
 
             // キャラクターの向き
@@ -55,22 +57,12 @@ namespace natsumon
             var nextPos = transform.position + nextDirection;
             this.transform.LookAt(nextPos);
 
-            // キャラクターの移動がある時はアニメーションのSpeedにセットする
-            if (nextDirection.magnitude > 0.1f)
-            {
-                animator.SetFloat("Speed", 0.5f);
-            }
-            else
-            {
-                animator.SetFloat("Speed", 0f);
-            }
+            // 移動速度計算
+            calcMoveSpeed(nextDirection);
 
-            // 移動速度
-            float moveSpeed = walkSpeed;
-            if (isRunning)
+            if (!characterController.isGrounded)
             {
-                moveSpeed *= sprintSpeedUpRatio;
-                animator.SetFloat("Speed", 1f);
+                moveSpeed = 2f;
             }
 
             // キャラクターの移動
@@ -104,6 +96,28 @@ namespace natsumon
             }
 
             isGroundedPrev = isGrounded;
+        }
+        private void calcMoveSpeed(Vector3 nextDirection)
+        {
+            // 移動速度計算
+            // 走っている時と、動いているけど走っていない時、何も入力していない時とで分ける
+            if (nextDirection.magnitude > 0.1f)
+            {
+                if (isRunning)
+                {
+                    moveSpeed = moveSpeed >= 8 ? 8 : moveSpeed + sprintSpeedUpRatio;
+                }
+                else
+                {
+                    moveSpeed = moveSpeed >= 2 ? moveSpeed - walkSpeedRatio : moveSpeed + walkSpeedRatio;
+                }
+            }
+            else
+            {
+                // 入力がない時はスピードを0にする
+                moveSpeed = 0f;
+            }
+            animator.SetFloat("Speed", moveSpeed);
         }
 
         // InputActionに設定しているActionsのコールバックたち
