@@ -52,15 +52,13 @@ namespace natsumon
             }
 
             // キャラクターの向き
-            {
-                // 入力されたZ軸方向とPlayerFollowerの正面方向、入力されたX軸方向とplayerFollowerの前後方向を正規化した値
-                // 重力をY軸に入れる
-                Vector3 nextDirection = (playerFollower.transform.forward * inputDirection.z + playerFollower.transform.right * inputDirection.x).normalized;
+            // 入力されたZ軸方向とPlayerFollowerの正面方向、入力されたX軸方向とplayerFollowerの前後方向を正規化した値
+            // 重力をY軸に入れる
+            Vector3 nextDirection = (playerFollower.transform.forward * inputDirection.z + playerFollower.transform.right * inputDirection.x).normalized;
 
-                // 現在の位置に角度を加算してキャラクターの角度をDirectionの方向へ変える
-                var nextPos = transform.position + nextDirection;
-                this.transform.LookAt(nextPos);
-            }
+            // 現在の位置に角度を加算してキャラクターの角度をDirectionの方向へ変える
+            var nextPos = transform.position + nextDirection;
+            this.transform.LookAt(nextPos);
 
             // 地面についていなければ重力の計算を、地面についていれば移動の計算をする
             if (!characterController.isGrounded)
