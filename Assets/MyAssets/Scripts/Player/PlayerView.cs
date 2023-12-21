@@ -12,6 +12,8 @@ namespace natsumon
         Animator animator;
 
         // 移動速度
+        private Vector3 inputDirection;
+        private bool isMoveInput = false;
         private float moveSpeed = 0f;
         private float walkSpeedRatio = 0.01f;
         private float sprintSpeedUpRatio = 0.02f;
@@ -42,31 +44,38 @@ namespace natsumon
 
         void Update()
         {
-
-            Vector3 inputDirection = new Vector3(input.x, 0, input.y);
-
-            // 重力の計算
-            calcGravity();
-
-            // キャラクターの向き
-            // 入力されたZ軸方向とPlayerFollowerの正面方向、入力されたX軸方向とplayerFollowerの前後方向を正規化した値
-            // 重力をY軸に入れる
-            Vector3 nextDirection = (playerFollower.transform.forward * inputDirection.z + playerFollower.transform.right * inputDirection.x).normalized;
-
-            // 現在の位置に角度を加算してキャラクターの角度をDirectionの方向へ変える
-            var nextPos = transform.position + nextDirection;
-            this.transform.LookAt(nextPos);
-
-            // 移動速度計算
-            calcMoveSpeed(nextDirection);
-
-            if (!characterController.isGrounded)
+            // 入力がある時と入力がないけどmoveSpeedが0fじゃない時に動き続けたい
+            // inputDirectionを更新するのは動いている時かmoveSpeed＝0fのとき
+            if (isMoveInput || moveSpeed == 0f)
             {
-                moveSpeed = 2f;
+                inputDirection = new Vector3(input.x, 0, input.y);
             }
 
-            // キャラクターの移動
-            characterController.Move((nextDirection + new Vector3(0, -verticalVelocity, 0)) * Time.deltaTime * moveSpeed);
+            // キャラクターの向き
+            {
+                // 入力されたZ軸方向とPlayerFollowerの正面方向、入力されたX軸方向とplayerFollowerの前後方向を正規化した値
+                // 重力をY軸に入れる
+                Vector3 nextDirection = (playerFollower.transform.forward * inputDirection.z + playerFollower.transform.right * inputDirection.x).normalized;
+
+                // 現在の位置に角度を加算してキャラクターの角度をDirectionの方向へ変える
+                var nextPos = transform.position + nextDirection;
+                this.transform.LookAt(nextPos);
+            }
+
+            // 地面についていなければ重力の計算を、地面についていれば移動の計算をする
+            if (!characterController.isGrounded)
+            {
+                // 重力の計算
+                calcGravity();
+                characterController.Move((nextDirection + new Vector3(0, -verticalVelocity, 0)) * Time.deltaTime * 2f);
+            }
+            else
+            {
+                // 移動速度計算
+                calcMoveSpeed();
+                // キャラクターの移動
+                characterController.Move(nextDirection * Time.deltaTime * moveSpeed);
+            }
 
             // カメラ位置更新
             playerFollower.UpdatePlayerFollower(this.transform.position, cameraDirection);
@@ -97,11 +106,11 @@ namespace natsumon
 
             isGroundedPrev = isGrounded;
         }
-        private void calcMoveSpeed(Vector3 nextDirection)
+        private void calcMoveSpeed()
         {
             // 移動速度計算
             // 走っている時と、動いているけど走っていない時、何も入力していない時とで分ける
-            if (nextDirection.magnitude > 0.1f)
+            if (isMoveInput)
             {
                 if (isRunning)
                 {
@@ -115,7 +124,7 @@ namespace natsumon
             else
             {
                 // 入力がない時はスピードを0にする
-                moveSpeed = 0f;
+                moveSpeed = moveSpeed <= 0f ? 0f : moveSpeed - sprintSpeedUpRatio;
             }
             animator.SetFloat("Speed", moveSpeed);
         }
@@ -124,6 +133,7 @@ namespace natsumon
         public void OnMove(InputValue value)
         {
             input = value.Get<Vector2>();
+            isMoveInput = input.magnitude == 0 ? false : true;
         }
 
         public void OnSprint(InputValue value)
