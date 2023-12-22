@@ -30,7 +30,7 @@ namespace natsumon
 
         // ジャンプ
         private float jumpPower = 3f;
-        private bool isJumping = false;
+        private bool isInitJump = false;
 
 
         void Start()
@@ -60,20 +60,23 @@ namespace natsumon
             var nextPos = transform.position + nextDirection;
             this.transform.LookAt(nextPos);
 
-            // 地面についていなければ重力の計算を、地面についていれば移動の計算をする
-            if (!characterController.isGrounded)
-            {
-                // 重力の計算
-                calcGravity();
-                characterController.Move((nextDirection + new Vector3(0, -verticalVelocity, 0)) * Time.deltaTime * 2f);
-            }
-            else
+            // 重力の計算
+            calcGravity();
+
+            // 地面についていれば移動の計算をする
+            if (characterController.isGrounded)
             {
                 // 移動速度計算
                 calcMoveSpeed();
                 // キャラクターの移動
-                characterController.Move(nextDirection * Time.deltaTime * moveSpeed);
+                characterController.Move((nextDirection + new Vector3(0, verticalVelocity, 0)) * Time.deltaTime * moveSpeed);
             }
+            else
+            {
+                // キャラクターの移動
+                characterController.Move((nextDirection + new Vector3(0, verticalVelocity, 0)) * Time.deltaTime * 2f);
+            }
+
 
             // カメラ位置更新
             playerFollower.UpdatePlayerFollower(this.transform.position, cameraDirection);
@@ -86,22 +89,20 @@ namespace natsumon
             // 接地直前はスピードを緩める
             if (isGrounded && !isGroundedPrev)
             {
-                verticalVelocity = initSpeed;
+                animator.SetBool("IsJumping", false);
+            }
+            else if (isInitJump) // ジャンプ入力時
+            {
+                verticalVelocity = jumpPower;
+                isInitJump = false;
+                animator.SetBool("IsJumping", true);
             }
             else if (!isGrounded) // 接地していなかったら重力の計算をする(落下速度 ＝ 初速度 + 重力加速度 * 時間)
             {
-                verticalVelocity += gravity * Time.deltaTime;
-                if (gravity < verticalVelocity)
-                {
+                verticalVelocity -= gravity * Time.deltaTime;
+                if (gravity <= verticalVelocity)
                     verticalVelocity = gravity;
-                }
             }
-            else if (isJumping) // ジャンプ時
-            {
-                verticalVelocity = -jumpPower;
-                isJumping = false;
-            }
-
             isGroundedPrev = isGrounded;
         }
         private void calcMoveSpeed()
@@ -122,8 +123,9 @@ namespace natsumon
             else
             {
                 // 入力がない時はスピードを0にする
-                moveSpeed = moveSpeed <= 0f ? 0f : moveSpeed - sprintSpeedUpRatio;
+                moveSpeed = moveSpeed <= 0f ? 0f : moveSpeed - sprintSpeedUpRatio * 2;
             }
+            // 速度をAnimatorへ
             animator.SetFloat("Speed", moveSpeed);
         }
 
@@ -142,7 +144,7 @@ namespace natsumon
         public void OnJump(InputValue value)
         {
             if (characterController.isGrounded)
-                isJumping = value.isPressed;
+                isInitJump = value.isPressed;
         }
 
         public void OnRotateCamera(InputValue value)
