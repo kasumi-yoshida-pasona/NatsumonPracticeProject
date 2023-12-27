@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UniRx;
+using System;
 
 
 namespace natsumon
@@ -31,6 +33,9 @@ namespace natsumon
         private float jumpPower = 3f;
         private bool isInitJump = false;
 
+        // 壁登り判定
+        private ReactiveProperty<bool> isClimbing = new ReactiveProperty<bool>(false);
+        public IReadOnlyReactiveProperty<bool> IsClimbing { get { return isClimbing; } }
 
         void Start()
         {
@@ -42,6 +47,21 @@ namespace natsumon
         }
 
         void Update()
+        {
+            // キャラクターの移動
+            moveCharacter();
+
+            // カメラ位置更新
+            playerFollower.UpdatePlayerFollower(this.transform.position, cameraDirection);
+
+            // 壁登り判定
+            Ray ray = new Ray(this.transform.position, this.transform.forward);
+            // デバッグ用。後で消す
+            Debug.DrawRay(ray.origin, ray.direction, Color.red, 1.0f);
+            isClimbing.Value = Physics.Raycast(ray, 0.4f);
+        }
+
+        private void moveCharacter()
         {
             // 入力がある時と入力がないけどmoveSpeedが0fじゃない時に動き続けたい
             // inputDirectionを更新するのは動いている時かmoveSpeed＝0fのとき
@@ -75,11 +95,6 @@ namespace natsumon
                 // キャラクターの移動
                 characterController.Move((nextDirection + new Vector3(0, verticalVelocity, 0)) * Time.deltaTime * 2f);
             }
-
-
-            // カメラ位置更新
-            playerFollower.UpdatePlayerFollower(this.transform.position, cameraDirection);
-
         }
 
         private void calcGravity()
