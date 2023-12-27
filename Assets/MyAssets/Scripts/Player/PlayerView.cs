@@ -1,66 +1,157 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 
 namespace natsumon
 {
-    [RequireComponent(typeof(Rigidbody))]
-    [RequireComponent(typeof(CharacterController))]
-    public class PlayerMover : MonoBehaviour
+    public class PlayerView : MonoBehaviour
     {
-        [SerializeField] private float _moveForce = 5;
-        [SerializeField] private float _jumpForce = 5;
+        [SerializeField] private PlayerFollower playerFollower;
+        CharacterController characterController;
+        PlayerInput playerInput;
+        Animator animator;
 
-        private Rigidbody _rigidbody;
-        private MyInputActions _gameInputs;
-        private Vector2 _moveInputValue;
+        // 移動速度
+        private Vector3 inputDirection;
+        private bool isMoveInput = false;
+        private float moveSpeed = 0f;
+        private float walkSpeedRatio = 0.01f;
+        private float sprintSpeedUpRatio = 0.02f;
 
-        private void Awake()
+        bool isRunning = false;
+        Vector2 input = Vector2.zero;
+        Vector3 cameraDirection;
+
+        // 重力
+        private bool isGroundedPrev;
+        private float initSpeed = 2f;
+        private float gravity = 5f;
+        private float verticalVelocity;
+
+        // ジャンプ
+        private float jumpPower = 3f;
+        private bool isInitJump = false;
+
+
+        void Start()
         {
-            _rigidbody = GetComponent<Rigidbody>();
+            characterController = GetComponent<CharacterController>();
+            playerInput = GetComponent<PlayerInput>();
+            animator = GetComponentInChildren<Animator>();
 
-            // Actionスクリプトのインスタンス生成
-            _gameInputs = new MyInputActions();
-
-            // Actionイベント登録
-            _gameInputs.Player.Move.started += OnMove;
-            _gameInputs.Player.Move.performed += OnMove;
-            _gameInputs.Player.Move.canceled += OnMove;
-            _gameInputs.Player.Jump.performed += OnJump;
-
-            // Input Actionを機能させるためには、
-            // 有効化する必要がある
-            _gameInputs.Enable();
+            playerInput.enabled = true;
         }
 
-        private void OnDestroy()
+        void Update()
         {
-            // 自身でインスタンス化したActionクラスはIDisposableを実装しているので、
-            // 必ずDisposeする必要がある
-            _gameInputs?.Dispose();
+            // 入力がある時と入力がないけどmoveSpeedが0fじゃない時に動き続けたい
+            // inputDirectionを更新するのは動いている時かmoveSpeed＝0fのとき
+            if (isMoveInput || moveSpeed == 0f)
+            {
+                inputDirection = new Vector3(input.x, 0, input.y);
+            }
+
+            // キャラクターの向き
+            // 入力されたZ軸方向とPlayerFollowerの正面方向、入力されたX軸方向とplayerFollowerの前後方向を正規化した値
+            // 重力をY軸に入れる
+            Vector3 nextDirection = (playerFollower.transform.forward * inputDirection.z + playerFollower.transform.right * inputDirection.x).normalized;
+
+            // 現在の位置に角度を加算してキャラクターの角度をDirectionの方向へ変える
+            var nextPos = transform.position + nextDirection;
+            this.transform.LookAt(nextPos);
+
+            // 重力の計算
+            calcGravity();
+
+            // 地面についていれば移動の計算をする
+            if (characterController.isGrounded)
+            {
+                // 移動速度計算
+                calcMoveSpeed();
+                // キャラクターの移動
+                characterController.Move((nextDirection + new Vector3(0, verticalVelocity, 0)) * Time.deltaTime * moveSpeed);
+            }
+            else
+            {
+                // キャラクターの移動
+                characterController.Move((nextDirection + new Vector3(0, verticalVelocity, 0)) * Time.deltaTime * 2f);
+            }
+
+
+            // カメラ位置更新
+            playerFollower.UpdatePlayerFollower(this.transform.position, cameraDirection);
+
         }
 
-        private void OnMove(InputAction.CallbackContext context)
+        private void calcGravity()
         {
-            // Moveアクションの入力取得
-            _moveInputValue = context.ReadValue<Vector2>();
+            var isGrounded = characterController.isGrounded;
+            // 接地直前はスピードを緩める
+            if (isGrounded && !isGroundedPrev)
+            {
+                animator.SetBool("IsJumping", false);
+            }
+            else if (isInitJump) // ジャンプ入力時
+            {
+                verticalVelocity = jumpPower;
+                isInitJump = false;
+                animator.SetBool("IsJumping", true);
+            }
+            else if (!isGrounded) // 接地していなかったら重力の計算をする(落下速度 ＝ 初速度 + 重力加速度 * 時間)
+            {
+                verticalVelocity -= gravity * Time.deltaTime;
+                if (gravity <= verticalVelocity)
+                    verticalVelocity = gravity;
+            }
+            isGroundedPrev = isGrounded;
+        }
+        private void calcMoveSpeed()
+        {
+            // 移動速度計算
+            // 走っている時と、動いているけど走っていない時、何も入力していない時とで分ける
+            if (isMoveInput)
+            {
+                if (isRunning)
+                {
+                    moveSpeed = moveSpeed >= 8 ? 8 : moveSpeed + sprintSpeedUpRatio;
+                }
+                else
+                {
+                    moveSpeed = moveSpeed >= 2 ? moveSpeed - walkSpeedRatio : moveSpeed + walkSpeedRatio;
+                }
+            }
+            else
+            {
+                // 入力がない時はスピードを0にする
+                moveSpeed = moveSpeed <= 0f ? 0f : moveSpeed - sprintSpeedUpRatio * 2;
+            }
+            // 速度をAnimatorへ
+            animator.SetFloat("Speed", moveSpeed);
         }
 
-        private void OnJump(InputAction.CallbackContext context)
+        // InputActionに設定しているActionsのコールバックたち
+        public void OnMove(InputValue value)
         {
-            // ジャンプする力を与える
-            _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+            input = value.Get<Vector2>();
+            isMoveInput = input.magnitude == 0 ? false : true;
         }
 
-        private void FixedUpdate()
+        public void OnSprint(InputValue value)
         {
-            // 移動方向の力を与える
-            _rigidbody.AddForce(new Vector3(
-                _moveInputValue.x,
-                0,
-                _moveInputValue.y
-            ) * _moveForce);
+            isRunning = value.isPressed;
+        }
+
+        public void OnJump(InputValue value)
+        {
+            if (characterController.isGrounded)
+                isInitJump = value.isPressed;
+        }
+
+        public void OnRotateCamera(InputValue value)
+        {
+            // 1が右、０が入力なし、−１が左入力
+            var yAxis = value.Get<float>();
+            cameraDirection = new Vector3(0f, yAxis, 0f);
         }
     }
 }
