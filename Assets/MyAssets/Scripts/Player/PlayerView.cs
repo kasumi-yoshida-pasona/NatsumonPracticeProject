@@ -24,7 +24,6 @@ namespace natsumon
 
         // 重力
         private bool isGroundedPrev;
-        private float initSpeed = 2f;
         private float gravity = 5f;
         private float verticalVelocity;
 
@@ -86,7 +85,7 @@ namespace natsumon
         private void calcGravity()
         {
             var isGrounded = characterController.isGrounded;
-            // 接地直前はスピードを緩める
+            // 接地直前にIsJumpingをfalseにする
             if (isGrounded && !isGroundedPrev)
             {
                 animator.SetBool("IsJumping", false);
