@@ -17,8 +17,6 @@ namespace natsumon
         private Vector3 inputDirection;
         private bool isMoveInput = false;
         private float moveSpeed = 0f;
-        private float walkSpeedRatio = 0.01f;
-        private float sprintSpeedUpRatio = 0.02f;
 
         bool isRunning = false;
         Vector2 input = Vector2.zero;
@@ -26,11 +24,9 @@ namespace natsumon
 
         // 重力
         private bool isGroundedPrev;
-        private float gravity = 5f;
         private float verticalVelocity;
 
         // ジャンプ
-        private float jumpPower = 3f;
         private bool isInitJump = false;
 
         // 壁登り判定
@@ -56,27 +52,24 @@ namespace natsumon
 
             // 壁登り判定
             Ray ray = new Ray(this.transform.position, this.transform.forward);
+            isClimbing.Value = Physics.Raycast(ray, 0.4f);
             // デバッグ用。後で消す
             Debug.DrawRay(ray.origin, ray.direction, Color.red, 1.0f);
-            isClimbing.Value = Physics.Raycast(ray, 0.4f);
         }
 
         private void moveCharacter()
         {
-            // 入力がある時と入力がないけどmoveSpeedが0fじゃない時に動き続けたい
+            // 入力がある時と入力がないけどmoveSpeedが0fじゃない時に動き続ける
             // inputDirectionを更新するのは動いている時かmoveSpeed＝0fのとき
             if (isMoveInput || moveSpeed == 0f)
-            {
                 inputDirection = new Vector3(input.x, 0, input.y);
-            }
 
             // キャラクターの向き
             // 入力されたZ軸方向とPlayerFollowerの正面方向、入力されたX軸方向とplayerFollowerの前後方向を正規化した値
-            // 重力をY軸に入れる
             Vector3 nextDirection = (playerFollower.transform.forward * inputDirection.z + playerFollower.transform.right * inputDirection.x).normalized;
 
             // 現在の位置に角度を加算してキャラクターの角度をDirectionの方向へ変える
-            var nextPos = transform.position + nextDirection;
+            Vector3 nextPos = this.transform.position + nextDirection;
             this.transform.LookAt(nextPos);
 
             // 重力の計算
@@ -99,6 +92,8 @@ namespace natsumon
 
         private void calcGravity()
         {
+            float jumpPower = 3f;
+            float gravity = 5f;
             var isGrounded = characterController.isGrounded;
             // 接地直前にIsJumpingをfalseにする
             if (isGrounded && !isGroundedPrev)
@@ -121,6 +116,9 @@ namespace natsumon
         }
         private void calcMoveSpeed()
         {
+
+            float walkSpeedRatio = 0.01f;
+            float sprintSpeedUpRatio = 0.02f;
             // 移動速度計算
             // 走っている時と、動いているけど走っていない時、何も入力していない時とで分ける
             if (isMoveInput)

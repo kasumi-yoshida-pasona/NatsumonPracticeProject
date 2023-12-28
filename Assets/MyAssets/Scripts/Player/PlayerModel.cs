@@ -1,20 +1,33 @@
-using System.Collections;
-using System.Collections.Generic;
 using UniRx;
-using UnityEngine;
 
 
 namespace natsumon
 {
-    public class PlayerModel : MonoBehaviour
+    public class PlayerModel
     {
-        private ReactiveProperty<Vector3> playerPosition = new ReactiveProperty<Vector3>();
-        public IReadOnlyReactiveProperty<Vector3> PlayerPosition { get { return playerPosition; } }
+        // 体力ゲージ
+        // private ReactiveProperty<float> healthGauge = new ReactiveProperty<float>();
+        // public IReadOnlyReactiveProperty<float> HealthGauge { get { return healthGauge; } }
+        // 壁登り中かどうか
+        private ReactiveProperty<bool> isClimbing = new ReactiveProperty<bool>();
+        public IReadOnlyReactiveProperty<bool> IsClimbing { get { return isClimbing; } }
+        // 移動中かどうか
+        // private ReactiveProperty<bool> isMoving = new ReactiveProperty<bool>();
+        // public IReadOnlyReactiveProperty<bool> IsMoving { get { return isMoving; } }
 
 
-        void Awake()
+        // 壁登り状態か接地状態か格納
+        public void StoreIsClimbing(bool isClimbingWall)
         {
-            playerPosition.Value = new Vector3(500, 15, 500);
+            isClimbing.Value = isClimbingWall;
+
+        }
+
+        public void Dispose()
+        {
+            // healthGauge.Dispose();
+            isClimbing.Dispose();
+            // isMoving.Dispose();
         }
     }
 }
