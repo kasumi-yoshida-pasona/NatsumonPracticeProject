@@ -18,7 +18,7 @@ namespace natsumon
         private bool isMoveInput = false;
         private float moveSpeed = 0f;
 
-        bool isRunning = false;
+        bool isSprint = false;
         Vector2 input = Vector2.zero;
         Vector3 cameraDirection;
 
@@ -44,20 +44,54 @@ namespace natsumon
 
         void Update()
         {
-            // キャラクターの移動
-            moveCharacter();
+
+            // 壁登り判定
+            Ray lowerRay = new Ray(this.transform.position, this.transform.forward);
+            Ray upperRay = new Ray(this.transform.position + new Vector3(0, 1, 0), this.transform.forward);
+            isClimbing.Value = Physics.Raycast(lowerRay, 0.4f) && Physics.Raycast(upperRay, 1.2f);
+
+            // デバッグ用。後で消す
+            Debug.DrawRay(upperRay.origin, upperRay.direction, Color.red, 1f);
+            Debug.DrawRay(lowerRay.origin, lowerRay.direction, Color.red, 1f);
+
+            if (isClimbing.Value)
+            {
+                climbing(upperRay);
+            }
+            else
+            {
+                movingOnGround();
+            }
 
             // カメラ位置更新
             playerFollower.UpdatePlayerFollower(this.transform.position, cameraDirection);
-
-            // 壁登り判定
-            Ray ray = new Ray(this.transform.position, this.transform.forward);
-            isClimbing.Value = Physics.Raycast(ray, 0.4f);
-            // デバッグ用。後で消す
-            Debug.DrawRay(ray.origin, ray.direction, Color.red, 1.0f);
         }
 
-        private void moveCharacter()
+        // 壁登り時のキャラクターの移動
+        private void climbing(Ray upperRay)
+        {
+            // 角度調整
+            // 頭側のRaycastが足側のRaycastと光線の長さ違うときキャラクターを前方に傾ける
+            if (!Physics.Raycast(upperRay, 0.4f))
+            {
+                this.transform.Rotate(1, 0, 0);
+            }
+            // 入力情報の取得
+            inputDirection = new Vector3(input.x, input.y, 0);
+
+            // 入力値によるキャラクターの次の動きの場所
+            // 入力されたZ軸方向とPlayerFollowerの正面方向、入力されたX軸方向とplayerFollowerの前後方向を正規化した値
+            Vector3 nextDirection = (playerFollower.transform.up * inputDirection.y + playerFollower.transform.right * inputDirection.x).normalized;
+
+            // Sprint状態かどうかでスピード変更
+            float climbingVelocity = isSprint ? 2f : 1f;
+
+            // キャラクターの移動
+            characterController.Move(nextDirection * Time.deltaTime * climbingVelocity);
+        }
+
+        // 接地時のキャラクターの移動
+        private void movingOnGround()
         {
             // 入力がある時と入力がないけどmoveSpeedが0fじゃない時に動き続ける
             // inputDirectionを更新するのは動いている時かmoveSpeed＝0fのとき
@@ -123,7 +157,7 @@ namespace natsumon
             // 走っている時と、動いているけど走っていない時、何も入力していない時とで分ける
             if (isMoveInput)
             {
-                if (isRunning)
+                if (isSprint)
                 {
                     moveSpeed = moveSpeed >= 8 ? 8 : moveSpeed + sprintSpeedUpRatio;
                 }
@@ -150,7 +184,7 @@ namespace natsumon
 
         public void OnSprint(InputValue value)
         {
-            isRunning = value.isPressed;
+            isSprint = value.isPressed;
         }
 
         public void OnJump(InputValue value)
