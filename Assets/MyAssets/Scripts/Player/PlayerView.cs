@@ -48,11 +48,11 @@ namespace natsumon
             // 壁登り判定
             Ray lowerRay = new Ray(this.transform.position, this.transform.forward);
             Ray upperRay = new Ray(this.transform.position + new Vector3(0, 1, 0), this.transform.forward);
-            isClimbing.Value = Physics.Raycast(lowerRay, 0.4f) && Physics.Raycast(upperRay, 1.2f);
+            isClimbing.Value = Physics.Raycast(lowerRay, 1.4f) && Physics.Raycast(upperRay, 1.2f);
 
             // デバッグ用。後で消す
-            Debug.DrawRay(upperRay.origin, upperRay.direction, Color.red, 1f);
-            Debug.DrawRay(lowerRay.origin, lowerRay.direction, Color.red, 1f);
+            Debug.DrawRay(upperRay.origin, upperRay.direction * 1.2f, Color.red, 1f);
+            Debug.DrawRay(lowerRay.origin, lowerRay.direction * 0.4f, Color.red, 1f);
 
             if (isClimbing.Value)
             {
@@ -70,27 +70,34 @@ namespace natsumon
         // 壁登り時のキャラクターの移動
         public void climbing()
         {
+            float moveForward = 0f;
             // 角度調整
             // 頭側のRaycastが足側のRaycastと光線の長さ違うときキャラクターを前方に傾ける
             Ray upperRay = new Ray(this.transform.position + new Vector3(0, 1, 0), this.transform.forward);
             if (!Physics.Raycast(upperRay, 0.4f))
             {
-                this.transform.Rotate(1, 0, 0);
+                // 頭部からの距離の計算、0.1ずつ追加していく
+                float rayDistance = 0.4f;
+                while (!Physics.Raycast(upperRay, rayDistance))
+                {
+                    rayDistance += 0.1f;
+                }
+                moveForward = rayDistance;
+                // rayDistanceの長さと縦の長さから角度を計算
+                // this.transform.Rotate(1, 0, 0);
             }
             // 入力情報の取得
             inputDirection = new Vector3(input.x, input.y, 0);
 
             // 入力値によるキャラクターの次の動きの場所
             // 入力されたZ軸方向とPlayerFollowerの正面方向、入力されたX軸方向とplayerFollowerの前後方向を正規化した値
-            Vector3 nextDirection = (playerFollower.transform.up * inputDirection.y + playerFollower.transform.right * inputDirection.x).normalized;
+            Vector3 nextDirection = (playerFollower.transform.up * inputDirection.y + playerFollower.transform.right * inputDirection.x + playerFollower.transform.forward * moveForward).normalized;
 
             // Sprint状態かどうかでスピード変更
             float climbingVelocity = isSprint ? 2f : 1f;
 
             // キャラクターの移動
-            Debug.Log($"before: {this.transform.rotation}");
             characterController.Move(nextDirection * Time.deltaTime * climbingVelocity);
-            Debug.Log(this.transform.rotation);
         }
 
         // 接地時のキャラクターの移動
