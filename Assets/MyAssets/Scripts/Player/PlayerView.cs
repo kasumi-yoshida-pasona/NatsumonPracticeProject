@@ -56,7 +56,7 @@ namespace natsumon
 
             if (isClimbing.Value)
             {
-                climbing(upperRay);
+                climbing();
             }
             else
             {
@@ -68,10 +68,11 @@ namespace natsumon
         }
 
         // 壁登り時のキャラクターの移動
-        private void climbing(Ray upperRay)
+        public void climbing()
         {
             // 角度調整
             // 頭側のRaycastが足側のRaycastと光線の長さ違うときキャラクターを前方に傾ける
+            Ray upperRay = new Ray(this.transform.position + new Vector3(0, 1, 0), this.transform.forward);
             if (!Physics.Raycast(upperRay, 0.4f))
             {
                 this.transform.Rotate(1, 0, 0);
@@ -87,11 +88,13 @@ namespace natsumon
             float climbingVelocity = isSprint ? 2f : 1f;
 
             // キャラクターの移動
+            Debug.Log($"before: {this.transform.rotation}");
             characterController.Move(nextDirection * Time.deltaTime * climbingVelocity);
+            Debug.Log(this.transform.rotation);
         }
 
         // 接地時のキャラクターの移動
-        private void movingOnGround()
+        public void movingOnGround()
         {
             // 入力がある時と入力がないけどmoveSpeedが0fじゃない時に動き続ける
             // inputDirectionを更新するのは動いている時かmoveSpeed＝0fのとき

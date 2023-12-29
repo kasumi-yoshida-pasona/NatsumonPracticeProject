@@ -29,11 +29,13 @@ namespace natsumon
                 {
                     // 壁登り時の動作を呼び出す
                     Debug.Log($"壁登り時の動作を呼び出す");
+                    playerView.climbing();
                 }
                 else
                 {
                     // 接地時の動作を呼び出す
                     Debug.Log($"接地時の動作を呼び出す");
+                    playerView.movingOnGround();
                 }
             }).AddTo(this);
         }
