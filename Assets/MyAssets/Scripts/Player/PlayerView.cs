@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UniRx;
 using System;
+using Unity.VisualScripting;
 
 
 namespace natsumon
@@ -83,15 +84,25 @@ namespace natsumon
                     rayDistance += 0.1f;
                 }
                 moveForward = rayDistance;
-                // rayDistanceの長さと縦の長さから角度を計算
-                // this.transform.Rotate(1, 0, 0);
+
+                // 傾ける位置取得
+                RaycastHit hit;
+                Physics.Raycast(upperRay, out hit);
+
+                // getAngleで基準点とターゲットの角度
+                Vector3 startPos = this.transform.position + this.transform.forward * 0.4f;
+                Vector3 targetDir = hit.point - startPos;
+                float angle = Vector3.Angle(targetDir, this.transform.up);
+
+                this.transform.Rotate(angle, 0, 0);
+                this.transform.position = this.transform.position + this.transform.forward * rayDistance;
             }
             // 入力情報の取得
             inputDirection = new Vector3(input.x, input.y, 0);
 
             // 入力値によるキャラクターの次の動きの場所
             // 入力されたZ軸方向とPlayerFollowerの正面方向、入力されたX軸方向とplayerFollowerの前後方向を正規化した値
-            Vector3 nextDirection = (playerFollower.transform.up * inputDirection.y + playerFollower.transform.right * inputDirection.x + playerFollower.transform.forward * moveForward).normalized;
+            Vector3 nextDirection = (playerFollower.transform.up * inputDirection.y + playerFollower.transform.right * inputDirection.x + playerFollower.transform.forward).normalized;
 
             // Sprint状態かどうかでスピード変更
             float climbingVelocity = isSprint ? 2f : 1f;
