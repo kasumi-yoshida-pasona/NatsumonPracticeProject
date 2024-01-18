@@ -71,32 +71,9 @@ namespace natsumon
         // 壁登り時のキャラクターの移動
         public void climbing()
         {
-            float moveForward = 0f;
             // 角度調整
-            // 頭側のRaycastが足側のRaycastと光線の長さ違うときキャラクターを前方に傾ける
-            Ray upperRay = new Ray(this.transform.position + new Vector3(0, 1, 0), this.transform.forward);
-            if (!Physics.Raycast(upperRay, 0.4f))
-            {
-                // 頭部からの距離の計算、0.1ずつ追加していく
-                float rayDistance = 0.4f;
-                while (!Physics.Raycast(upperRay, rayDistance))
-                {
-                    rayDistance += 0.1f;
-                }
-                moveForward = rayDistance;
+            adjustCharacterAngle();
 
-                // 傾ける位置取得
-                RaycastHit hit;
-                Physics.Raycast(upperRay, out hit);
-
-                // getAngleで基準点とターゲットの角度
-                Vector3 startPos = this.transform.position + this.transform.forward * 0.4f;
-                Vector3 targetDir = hit.point - startPos;
-                float angle = Vector3.Angle(targetDir, this.transform.up);
-
-                this.transform.Rotate(angle, 0, 0);
-                this.transform.position = this.transform.position + this.transform.forward * rayDistance;
-            }
             // 入力情報の取得
             inputDirection = new Vector3(input.x, input.y, 0);
 
@@ -109,6 +86,40 @@ namespace natsumon
 
             // キャラクターの移動
             characterController.Move(nextDirection * Time.deltaTime * climbingVelocity);
+        }
+
+        // キャラクターの角度調整
+        private void adjustCharacterAngle()
+        {
+            // 頭側のRaycastが足側のRaycastと光線の長さが違うときキャラクターを前方に傾ける
+            Ray upperRay = new Ray(this.transform.position + new Vector3(0, 1, 0), this.transform.forward);
+            if (!Physics.Raycast(upperRay, 0.4f))
+            {
+                // 頭部からの距離の計算、0.1ずつ追加していく
+                float rayDistance = 0.4f;
+                while (!Physics.Raycast(upperRay, rayDistance))
+                {
+                    rayDistance += 0.1f;
+                }
+
+                // 頭部のRaycastが当たる壁までの距離をhitに出力
+                RaycastHit hit;
+                Physics.Raycast(upperRay, out hit);
+
+                // getAngleで基準点とターゲットの角度
+                Vector3 startPos = this.transform.position + this.transform.forward * 0.4f;
+                Vector3 targetDir = hit.point - startPos;
+                float angle = Vector3.Angle(targetDir, this.transform.up);
+
+                // X軸（正面）方向に傾斜
+                this.transform.Rotate(angle, 0, 0);
+
+                // 傾けた後に再度キャラクターと壁までの距離を出力
+                Ray targetRay = new Ray(this.transform.position, this.transform.forward);
+                Physics.Raycast(targetRay, out hit);
+                Debug.Log(hit.point);
+                this.transform.position = this.transform.position - hit.point;
+            }
         }
 
         // 接地時のキャラクターの移動
